@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en-GB" data-mode="light" data-skin="native">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landed – Aberdeen arrival kits, delivered to your halls room</title>
+<meta name="description" content="Bedding, kitchen basics and a winter kit waiting in your Aberdeen halls room before you check in. Reserve for £20.">
+<script>
+  // Apply saved mode and skin before first paint so nothing flashes.
+  (function () { try {
+    var q = new URLSearchParams(location.search), h = document.documentElement;
+    var m = q.get("mode") || localStorage.getItem("md.mode") || "auto";
+    h.dataset.mode = m === "auto" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : m;
+    h.dataset.skin = q.get("skin") || localStorage.getItem("md.skin") || "native";
+  } catch (e) {} })();
+</script>
+<link rel="stylesheet" href="meta/meta.css">
+<style id="page-style">
+  /* Page-specific declarations. Skins own the look; this file only says
+     which icon styles this page wants where. */
+  .md-kits { --icon-style: line; }
+  [data-md~="kit"] md-icon { width: 44px; height: 44px; }
+  [data-md~="addon"] md-icon { width: 30px; height: 30px; }
+  [data-md~="item"] md-icon { width: 34px; height: 34px; }
+  [data-md~="step"] md-icon { width: 40px; height: 40px; }
+</style>
+</head>
+<body>
+<main class="md-main">
+  <header class="md-top">
+    <div><span data-md="wordmark">Landed</span> <span data-md="place" data-i18n="brand.place">Aberdeen</span></div>
+    <md-switcher controls="mode lang skin"></md-switcher>
+  </header>
+
+  <div class="md-hero">
+    <div>
+      <h1 data-md="h1" data-i18n="hero.h1">Your room, ready when you land.</h1>
+      <p data-md="lead" data-i18n="hero.p">Bedding, kitchen basics and the things everyone forgets, waiting in your Aberdeen halls room before you check in.</p>
+      <p data-md="terms" data-i18n="hero.terms">Reserve with a £20 deposit. Pay the rest at your door on delivery day. Cancel free up to 14 days before you arrive.</p>
+    </div>
+    <div>
+      <!-- Halls room illustration, drawn from tokens so it follows the mode. Swap for a photo of the real sample kit once you have one. -->
+      <md-graphic name="room" id="room" state="arrival winter"></md-graphic>
+      <div data-md="cap" id="room-cap"></div>
+    </div>
+  </div>
+
+  <form id="order" novalidate>
+    <section class="md-section">
+      <h2 data-md="h2" data-i18n="kits.h2">Choose your kit</h2>
+      <div class="md-cols">
+        <div>
+          <div class="md-kits" id="kits">
+            <label data-md="kit">
+              <input type="radio" name="kit" value="arrival" data-price="95">
+              <md-icon name="duvet" size="l"></md-icon>
+              <div><div data-md="kit-name" data-i18n="kit.arrival.name">Arrival kit</div><div data-md="kit-line" data-i18n="kit.arrival.line">Everything for the first night and the first week.</div></div>
+              <div data-md="kit-price" data-price-of="arrival">£95</div>
+            </label>
+            <label data-md="kit">
+              <input type="radio" name="kit" value="winter" data-price="45">
+              <md-icon name="bottle" size="l"></md-icon>
+              <div><div data-md="kit-name" data-i18n="kit.winter.name">Winter kit</div><div data-md="kit-line" data-i18n="kit.winter.line">For the dark, the wind and the granite. Delivered in October.</div></div>
+              <div data-md="kit-price" data-price-of="winter">£45</div>
+            </label>
+            <label data-md="kit">
+              <input type="radio" name="kit" value="both" data-price="125" checked>
+              <md-icon name="box" size="l"></md-icon>
+              <div><div data-md="kit-name" data-i18n="kit.both.name">Both kits</div><div data-md="kit-line"><span data-i18n="kit.both.line">Arrival kit now, winter kit in October.</span> <span data-md="save" data-i18n="kit.both.save">Saves £15.</span></div></div>
+              <div data-md="kit-price" data-price-of="both">£125</div>
+            </label>
+            <label data-md="kit">
+              <input type="radio" name="kit" value="mix">
+              <md-icon name="mix" size="l"></md-icon>
+              <div><div data-md="kit-name" data-i18n="kit.mix.name">Mix and match</div><div data-md="kit-line" data-i18n="kit.mix.line">Pick only what you need from either box. Orders from £30.</div></div>
+              <div data-md="kit-price" id="mix-price" data-i18n="kit.mix.from">from £3</div>
+            </label>
+          </div>
+
+          <div data-md="compare" id="compare">
+            <h3 data-md="h3" data-i18n="compare.h3">Buying it yourself</h3>
+            <div data-md="bar-row"><span data-i18n="compare.diy">Retail park</span><div data-md="bar"><i data-md="bar-fill" id="bar-diy"></i></div><b id="diy-price"></b></div>
+            <div data-md="bar-row"><span data-i18n="compare.us">Landed</span><div data-md="bar"><i data-md="bar-fill us" id="bar-us"></i></div><b id="us-price"></b></div>
+            <p data-md="foot" id="compare-foot"></p>
+          </div>
+        </div>
+
+        <div class="md-contents">
+          <h3 data-md="h3" id="contents-title">What's in the box</h3>
+          <div class="md-grid" id="contents"></div>
+          <div data-md="nudge" id="nudge"><span id="nudge-text"></span><button data-md="btn" type="button" id="nudge-btn"></button></div>
+          <div data-md="err-msg" id="mix-err" data-i18n="mix.err">Mix and match orders start at £30. Add a few more items or pick a kit.</div>
+
+          <h3 data-md="h3" data-i18n="addons.h3">Add to your box</h3>
+          <div class="md-addons" id="addons"></div>
+
+          <div data-md="storage">
+            <input data-md="checkbox" type="checkbox" id="storage" name="storage">
+            <label for="storage">
+              <div data-md="storage-name" data-i18n="storage.name">Summer storage, from May 2027</div>
+              <div data-md="storage-line" data-i18n="storage.line">We collect your boxes from halls in May, keep them over summer and deliver them to your new address. £45 a box. Tick to be told when booking opens; nothing to pay now.</div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="md-section">
+      <h2 data-md="h2" data-i18n="deliver.h2">Where should we deliver?</h2>
+      <div class="md-cols">
+        <div>
+          <div data-md="label" data-i18n="uni.lbl">Your university</div>
+          <div data-md="chips" id="uni">
+            <label data-md="chip"><input type="radio" name="uni" value="UoA" checked><span data-i18n="uni.uoa">University of Aberdeen</span></label>
+            <label data-md="chip"><input type="radio" name="uni" value="RGU"><span data-i18n="uni.rgu">Robert Gordon University</span></label>
+            <label data-md="chip"><input type="radio" name="uni" value="NESCol"><span data-i18n="uni.nescol">NESCol</span></label>
+            <label data-md="chip"><input type="radio" name="uni" value="Other"><span data-i18n="uni.other">Other</span></label>
+          </div>
+          <div data-md="label" data-i18n="halls.lbl">Halls</div>
+          <div data-md="chips" id="halls">
+            <label data-md="chip"><input type="radio" name="halls" value="Hillhead" checked><span data-i18n="halls.hillhead">Hillhead</span></label>
+            <label data-md="chip"><input type="radio" name="halls" value="Garthdee"><span data-i18n="halls.garthdee">Garthdee</span></label>
+            <label data-md="chip"><input type="radio" name="halls" value="City centre halls"><span data-i18n="halls.city">City centre halls</span></label>
+            <label data-md="chip"><input type="radio" name="halls" value="Private flat"><span data-i18n="halls.flat">Private flat</span></label>
+          </div>
+          <div data-md="field">
+            <label data-md="label" for="building"><span data-i18n="building.lbl">Building, flat and room</span> <small data-i18n="building.small">(if you know it yet)</small></label>
+            <input data-md="input" type="text" id="building" name="building" data-i18n-attr="placeholder:building.ph" placeholder="e.g. Crombie Hall, flat 12, room C" autocomplete="off">
+          </div>
+          <div data-md="field" id="f-date">
+            <label data-md="label" for="arrival" data-i18n="date.lbl">Check-in date</label>
+            <input data-md="input" type="date" id="arrival" name="arrival" required>
+            <div data-md="error" data-i18n="date.err">Tell us the day you check in so the kit is there first.</div>
+            <div data-md="info" id="date-info"></div>
+          </div>
+        </div>
+        <div>
+          <!-- Schematic route map: Hillhead by the Don, the centre by the harbour, Garthdee by the Dee -->
+          <md-graphic name="map" id="map"></md-graphic>
+          <div data-md="cap" class="center" id="map-cap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="md-section">
+      <h2 data-md="h2" data-i18n="about.h2">About you</h2>
+      <div class="md-cols">
+        <div>
+          <div data-md="field" id="f-name">
+            <label data-md="label" for="name" data-i18n="name.lbl">Name</label>
+            <input data-md="input" type="text" id="name" name="name" autocomplete="name" required>
+            <div data-md="error" data-i18n="name.err">We need a name for the label on the box.</div>
+          </div>
+          <div data-md="field" id="f-email">
+            <label data-md="label" for="email" data-i18n="email.lbl">Email</label>
+            <input data-md="input" type="email" id="email" name="email" autocomplete="email" inputmode="email" required>
+            <div data-md="error" data-i18n="email.err">Enter an email address; the deposit link goes here.</div>
+          </div>
+          <div data-md="field" id="f-phone">
+            <label data-md="label" for="phone"><span data-i18n="phone.lbl">WhatsApp number</span> <small data-i18n="phone.small">(with country code)</small></label>
+            <input data-md="input" type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" data-i18n-attr="placeholder:phone.ph" placeholder="+44 7…" required>
+            <div data-md="error" data-i18n="phone.err">A WhatsApp number so we can message you on delivery day.</div>
+          </div>
+        </div>
+        <div>
+          <div data-md="field">
+            <label data-md="label" for="from"><span data-i18n="from.lbl">Arriving from</span> <small data-i18n="from.small">(country, optional)</small></label>
+            <input data-md="input" type="text" id="from" name="from" autocomplete="country-name">
+          </div>
+          <div data-md="field">
+            <label data-md="label" for="referral"><span data-i18n="referral.lbl">Referral code</span> <small data-i18n="referral.small">(optional, £10 off)</small></label>
+            <input data-md="input" type="text" id="referral" name="referral" data-i18n-attr="placeholder:referral.ph" placeholder="LND-XXXX" autocomplete="off" autocapitalize="characters">
+            <div data-md="note" id="ref-note"></div>
+          </div>
+          <div data-md="field">
+            <label data-md="label" for="notes"><span data-i18n="notes.lbl">Anything we should know?</span> <small data-i18n="notes.small">(optional)</small></label>
+            <textarea data-md="input" id="notes" name="notes" data-i18n-attr="placeholder:notes.ph" placeholder="Allergies, a double bed, landing late at night…"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div data-md="sticky">
+      <div class="inner">
+        <div data-md="total"><b id="total">£125</b><span data-md="total-sub" id="total-sub">£20 deposit now, rest on delivery</span></div>
+        <button data-md="btn primary" type="submit" id="submit" data-i18n="cta.reserve">Reserve my kit</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="after-form">
+    <section class="md-section">
+      <h2 data-md="h2" data-i18n="how.h2">How it works</h2>
+      <div class="md-steps">
+        <div data-md="step"><md-icon name="box"></md-icon><b data-md="step-title" data-i18n="how.1.t">Reserve</b><p data-md="step-text" data-i18n="how.1.p">Pick a kit here. We email a £20 deposit link within 24 hours and hold your box.</p></div>
+        <div data-md="step"><md-icon name="chat"></md-icon><b data-md="step-title" data-i18n="how.2.t">Confirm</b><p data-md="step-text" data-i18n="how.2.p">A week before you arrive we message you on WhatsApp to check the building and room.</p></div>
+        <div data-md="step"><md-icon name="key"></md-icon><b data-md="step-title" data-i18n="how.3.t">Land</b><p data-md="step-text" data-i18n="how.3.p">On check-in day the box is in your room or waiting at reception. Pay the balance by card or cash at the door.</p></div>
+      </div>
+    </section>
+
+    <section class="md-section faq">
+      <h2 data-md="h2" data-i18n="faq.h2">Questions people ask</h2>
+      <details data-md="faq-item"><summary data-md="faq-q" data-i18n="faq.1.q">What if my room changes after I reserve?</summary><p data-md="faq-a" data-i18n="faq.1.a">Nothing to do now. We confirm the building and room on WhatsApp the week before delivery, so put down whatever you know today.</p></details>
+      <details data-md="faq-item"><summary data-md="faq-q" data-i18n="faq.2.q">I'm landing late at night. Will the box still be there?</summary><p data-md="faq-a" data-i18n="faq.2.a">Yes. If halls reception can't let us into your room, we leave it with reception under your name and message you the details.</p></details>
+      <details data-md="faq-item"><summary data-md="faq-q" data-i18n="faq.3.q">Can I cancel?</summary><p data-md="faq-a" data-i18n="faq.3.a">Free cancellation up to 14 days before your check-in date and the £20 deposit comes straight back. Inside 14 days the stock is already bought, so the deposit is kept.</p></details>
+      <details data-md="faq-item"><summary data-md="faq-q" data-i18n="faq.4.q">I already have a duvet. Can I leave things out?</summary><p data-md="faq-a" data-i18n="faq.4.a">Choose "Mix and match" and tap only the items you need; each has its own price and orders start at £30. If you've already reserved a kit, message us on WhatsApp and we'll swap the duvet for something of the same value.</p></details>
+      <details data-md="faq-item"><summary data-md="faq-q" data-i18n="faq.5.q">Why a deposit and not the full amount?</summary><p data-md="faq-a" data-i18n="faq.5.a">The £20 tells us you're serious, so we can buy the stock. The rest is paid when the box is in your hands; you never pay in full for something you haven't seen.</p></details>
+    </section>
+  </div>
+
+  <div data-md="done" id="done">
+    <h2 data-md="h2" data-i18n="done.h2">Reserved.</h2>
+    <p data-i18n="done.refLabel">Your order reference:</p>
+    <div data-md="ref-badge" id="ref"></div>
+    <dl data-md="summary" id="summary"></dl>
+    <p data-i18n="done.p1">We'll email your £20 deposit link within 24 hours. The balance is paid at your door on delivery day.</p>
+    <div data-md="pay">
+      <b data-i18n="done.pay.h">Pay the deposit now</b>
+      <p data-i18n="done.pay.p">Or skip the wait and pay the £20 straight away. Your reference goes on the payment so we can match it.</p>
+      <!-- Payment gateway from a declaration: change provider to "stripe", "paypal" or "none";
+           the account comes from DEPOSIT_GATEWAY below, the ref and email from the order. -->
+      <md-package name="PaymentGateway" provider="monobank" amount="20" currency="GBP" id="deposit-pay"></md-package>
+    </div>
+    <div data-md="share">
+      <b data-i18n="share.h">Give a friend £10, get £10 back</b>
+      <span data-i18n="share.p">Your reference is also your referral code. Anyone who reserves with it gets £10 off, and we take £10 off your balance.</span>
+      <div class="row"><code data-md="code" id="share-code"></code><button data-md="btn" type="button" id="copy" data-i18n="share.copy">Copy code</button><md-package name="Share" provider="whatsapp" id="share-pkg"></md-package></div>
+    </div>
+    <p><span data-i18n="done.fallback">If nothing arrives, or you'd rather talk to a person,</span> <a data-md="link" id="mailto" href="#" data-i18n="done.fallback.link">send us this order by email</a><span data-i18n="done.fallback.end">.</span></p>
+    <p><md-package name="Chat" provider="whatsapp" id="chat-pkg"></md-package></p>
+  </div>
+
+  <footer data-md="footer" data-i18n="footer">Landed is a small Aberdeen business run by students, for students. Deposits are refundable up to 14 days before your check-in date.</footer>
+</main>
+
+<script src="meta/icons.js"></script>
+<script src="meta/graphics.js"></script>
+<script src="meta/packages.js"></script>
+<script src="meta/skins.js"></script>
+<script src="meta/meta.js"></script>
+<script>
+  // Where reservations go. Point this at your form backend (Formspree, Tally, a Google Apps Script,
+  // your own API). Leave empty and the page still works: it shows a confirmation and an email fallback.
+  const FORM_ENDPOINT = "";
+  const ORDER_EMAIL = "hello@example.com";
+  const WHATSAPP_NUMBER = "";            // e.g. "447700900000", used by the Chat package
+  const PAGE_URL = location.origin + location.pathname; // the link put in referral shares; hard-code the real domain once there is one
+  // Deposit payments: a declaration, not code. provider: "monobank" | "stripe" | "paypal" | "none".
+  // account: the monobank jar id, the Stripe payment-link id, or the PayPal.Me handle.
+  const DEPOSIT_GATEWAY = { provider: "monobank", account: "" };
+
+  const KITS = {
+    arrival: { price: 95, diy: 140 },
+    winter:  { price: 45, diy: 65 },
+    both:    { price: 125, diy: 205 },
+    mix:     { price: 0, diy: 0 },
+  };
+  const ITEMS = {
+    arrival: [["duvet", 20], ["pillow", 10], ["sheet", 12], ["towel", 10], ["plate", 9], ["mug", 5], ["cutlery", 6], ["pan", 16], ["kettle", 14], ["board", 7], ["plug", 8], ["bag", 5]],
+    winter:  [["bottle", 12], ["thermal", 14], ["socks", 7], ["beanie", 7], ["vitamin", 6], ["mask", 5], ["tea", 4], ["rowie", 3]],
+  };
+  const ADDONS = [
+    { id: "pillow", icon: "pillow", price: 8 }, { id: "topper", icon: "topper", price: 25 }, { id: "lamp", icon: "lamp", price: 12 },
+    { id: "rack", icon: "rack", price: 15 }, { id: "crockery", icon: "plate", price: 10 },
+  ];
+
+  const $ = id => document.getElementById(id);
+  const t = (k, o) => MD.t(k, o) ?? k;
+  const money = n => MD.money(n);
+  const form = $("order");
+  const MIX_MIN = 30;
+  const state = { kit: "both", addons: {}, referral: false, mix: new Set() };
+  const mixSum = group => (group ? ITEMS[group] : [...ITEMS.arrival, ...ITEMS.winter]).filter(i => state.mix.has(i[0])).reduce((s, i) => s + i[1], 0);
+  const kitName = k => t(`kit.${k}.name`);
+  const icon = (name, size) => MD.icons.tag(name, { size });
+
+  // ---- kit + contents ----
+  function renderKitCards() {
+    form.querySelectorAll('[data-md="kit"]').forEach(l => MD.state(l, "on", l.querySelector("input").checked));
+    document.querySelectorAll("[data-price-of]").forEach(el => el.textContent = money(KITS[el.dataset.priceOf].price));
+  }
+  function renderContents() {
+    const kit = state.kit, mix = kit === "mix";
+    const tag = (arr, cls) => arr.map(i => [...i, cls]);
+    const list = (kit === "both" || mix) ? [...tag(ITEMS.arrival, ""), ...tag(ITEMS.winter, "winter")] : tag(ITEMS[kit], kit === "winter" ? "winter" : "");
+    $("contents").innerHTML = list.map(([id, price, cls]) => mix
+      ? `<button type="button" data-md="item ${cls}" data-state="${state.mix.has(id) ? "on" : ""}" data-id="${id}" aria-pressed="${state.mix.has(id)}">${icon(id)}${t("item." + id)}<span data-md="item-price">${money(price)}</span></button>`
+      : `<div data-md="item ${cls}">${icon(id)}${t("item." + id)}</div>`).join("");
+    $("contents-title").textContent = mix ? t("contents.mix") : kit === "both" ? t("contents.both") : t("contents.one");
+
+    const hasA = mix ? ITEMS.arrival.some(i => state.mix.has(i[0])) : kit !== "winter";
+    const hasW = mix ? ITEMS.winter.some(i => state.mix.has(i[0])) : kit !== "arrival";
+    $("room").setState([hasA && "arrival", hasW && "winter"]);
+    $("room-cap").textContent = t(`kit.${kit}.cap`);
+
+    const price = mix ? mixSum() : KITS[kit].price;
+    const diy = mix ? Math.round(price * 1.2) : KITS[kit].diy;
+    const max = 220;
+    $("bar-diy").style.width = (diy / max * 100) + "%";
+    $("bar-us").style.width = (price / max * 100) + "%";
+    $("diy-price").textContent = t("compare.approx", { money: money(diy) });
+    $("us-price").textContent = money(price);
+    $("compare-foot").textContent = kit === "winter" ? t("compare.foot.winter") : t("compare.foot.other");
+    $("mix-price").textContent = mix && price ? money(price) : t("kit.mix.from");
+    renderNudge();
+  }
+
+  // When the pick-and-mix costs more than a kit that contains it all, say so
+  function renderNudge() {
+    const n = $("nudge");
+    if (state.kit !== "mix") { MD.state(n, "show", false); return; }
+    const a = mixSum("arrival"), w = mixSum("winter"), both = a + w;
+    let target = null;
+    if (a > 0 && w > 0 && both >= KITS.both.price) target = "both";
+    else if (w === 0 && a >= KITS.arrival.price) target = "arrival";
+    else if (a === 0 && w >= KITS.winter.price) target = "winter";
+    if (!target) { MD.state(n, "show", false); return; }
+    $("nudge-text").textContent = t("nudge.text", { sum: money(both), kit: kitName(target).toLowerCase(), price: money(KITS[target].price) });
+    $("nudge-btn").textContent = t("nudge.btn", { kit: kitName(target).toLowerCase() });
+    $("nudge-btn").onclick = () => { form.querySelector(`input[name="kit"][value="${target}"]`).click(); };
+    MD.state(n, "show", true);
+  }
+  $("contents").addEventListener("click", e => {
+    const b = e.target.closest("button[data-md]"); if (!b) return;
+    const id = b.dataset.id;
+    state.mix.has(id) ? state.mix.delete(id) : state.mix.add(id);
+    MD.state($("mix-err"), "show", false);
+    renderContents(); renderDate(); updateTotal();
+  });
+
+  // ---- add-ons ----
+  function renderAddons() {
+    $("addons").innerHTML = ADDONS.map(a => {
+      const name = t("addon." + a.id), q = state.addons[a.id] || 0;
+      return `
+      <div data-md="addon" data-state="${q ? "on" : ""}" data-id="${a.id}">
+        ${icon(a.icon)}
+        <div><div data-md="addon-name">${name}</div><div data-md="addon-price">${money(a.price)}</div></div>
+        <div data-md="stepper" role="group" aria-label="${t("addon.qty", { name })}">
+          <button data-md="stepper-btn" type="button" data-d="-1" aria-label="${t("addon.remove", { name })}">−</button>
+          <output data-md="stepper-out">${q}</output>
+          <button data-md="stepper-btn" type="button" data-d="1" aria-label="${t("addon.add", { name })}">+</button>
+        </div>
+      </div>`; }).join("");
+  }
+  $("addons").addEventListener("click", e => {
+    const b = e.target.closest("button[data-d]"); if (!b) return;
+    const row = b.closest('[data-md="addon"]'), id = row.dataset.id;
+    const q = Math.max(0, Math.min(5, (state.addons[id] || 0) + Number(b.dataset.d)));
+    state.addons[id] = q;
+    row.querySelector("output").textContent = q;
+    MD.state(row, "on", q > 0);
+    updateTotal();
+  });
+
+  // ---- totals ----
+  const addonsTotal = () => ADDONS.reduce((s, a) => s + a.price * (state.addons[a.id] || 0), 0);
+  const kitPrice = () => state.kit === "mix" ? mixSum() : KITS[state.kit].price;
+  const grandTotal = () => Math.max(0, kitPrice() + addonsTotal() - (state.referral ? 10 : 0));
+  function updateTotal() {
+    $("total").textContent = money(grandTotal());
+    const extras = addonsTotal();
+    let sub = t("total.sub");
+    if (state.kit === "mix") sub = state.mix.size ? t("total.items", { n: state.mix.size }) + " · " + sub : t("total.tap");
+    if (extras) sub += " · " + t("total.addons", { money: money(extras) });
+    $("total-sub").innerHTML = sub + (state.referral ? ` · <em>${t("total.referral")}</em>` : "");
+  }
+
+  // ---- halls + map ----
+  const HALL_KEY = { "Hillhead": "hillhead", "Garthdee": "garthdee", "City centre halls": "city", "Private flat": "flat" };
+  const UNI_KEY = { UoA: "uoa", RGU: "rgu", NESCol: "nescol", Other: "other" };
+  const UNI_HALLS = { UoA: "Hillhead", RGU: "Garthdee", NESCol: "City centre halls" };
+  function renderUni(fromUser) {
+    const uni = form.querySelector('input[name="uni"]:checked').value;
+    form.querySelectorAll('#uni [data-md="chip"]').forEach(c => MD.state(c, "on", c.querySelector("input").checked));
+    if (fromUser && UNI_HALLS[uni]) { form.querySelector(`input[name="halls"][value="${UNI_HALLS[uni]}"]`).checked = true; renderMap(); }
+  }
+  function renderMap() {
+    const halls = form.querySelector('input[name="halls"]:checked').value;
+    form.querySelectorAll('#halls [data-md="chip"]').forEach(c => MD.state(c, "on", c.querySelector("input").checked));
+    $("map").setStop(halls);
+    $("map").setState([halls === "Private flat" && "anywhere"]);
+    $("map-cap").textContent = t("map.cap." + HALL_KEY[halls]);
+  }
+
+  // ---- check-in date ----
+  function renderDate() {
+    const v = $("arrival").value, box = $("date-info");
+    if (!v) { MD.state(box, "show", false); return; }
+    const d = new Date(v + "T12:00:00"), today = new Date(); today.setHours(12, 0, 0, 0);
+    const days = Math.round((d - today) / 86400000);
+    const nice = MD.i18n.date(d, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    let msg;
+    if (days < 0) msg = t("date.past");
+    else if (days === 0) msg = t("date.today");
+    else if (days < 14) msg = t("date.soon", { date: nice, n: days });
+    else msg = t("date.ok", { date: nice, n: days }) + " " +
+      (state.kit === "mix" ? (ITEMS.winter.some(i => state.mix.has(i[0])) ? t("date.winterItemsFollow") : "") : state.kit !== "arrival" ? t("date.winterFollows") : "");
+    box.textContent = msg.trim(); MD.state(box, "show", true);
+  }
+
+  // ---- referral ----
+  function renderReferral() {
+    const v = $("referral").value.trim().toUpperCase(), n = $("ref-note");
+    if (!v) { n.textContent = ""; n.classList.remove("ok", "no"); state.referral = false; }
+    else if (/^LND-[A-Z0-9]{4}$/.test(v)) { n.textContent = t("referral.ok"); n.classList.add("ok"); n.classList.remove("no"); state.referral = true; }
+    else { n.textContent = t("referral.no"); n.classList.add("no"); n.classList.remove("ok"); state.referral = false; }
+    updateTotal();
+  }
+
+  form.addEventListener("change", e => {
+    if (e.target.name === "kit") { state.kit = e.target.value; renderKitCards(); renderContents(); renderDate(); updateTotal(); }
+    if (e.target.name === "uni") renderUni(true);
+    if (e.target.name === "halls") renderMap();
+    if (e.target.id === "arrival") renderDate();
+  });
+  $("referral").addEventListener("input", renderReferral);
+
+  function renderAll() { renderKitCards(); renderContents(); renderAddons(); renderUni(false); renderMap(); renderDate(); renderReferral(); updateTotal(); }
+
+  // Re-render generated text when the language changes
+  document.addEventListener("md:lang", () => { renderAll(); if (lastOrder) showDone(lastOrder); });
+
+  // Keep what the visitor typed across a framework switch (the page reloads for that)
+  document.addEventListener("md:before-reload", () => {
+    MD.persist.save("order", { state: { ...state, mix: [...state.mix] }, fields: Object.fromEntries(new FormData(form).entries()) });
+  });
+  (function restore() {
+    const saved = MD.persist.take("order"); if (!saved) return;
+    Object.assign(state, saved.state, { mix: new Set(saved.state.mix) });
+    for (const [k, v] of Object.entries(saved.fields)) {
+      const el = form.elements[k]; if (!el) continue;
+      if (el instanceof RadioNodeList) el.value = v; else if (el.type === "checkbox") el.checked = true; else el.value = v;
+    }
+  })();
+
+  MD.packages.configure("PaymentGateway", DEPOSIT_GATEWAY);
+  MD.packages.configure("Chat", { account: WHATSAPP_NUMBER || ORDER_EMAIL, provider: WHATSAPP_NUMBER ? "whatsapp" : "email" });
+  MD.boot().then(renderAll);
+
+  // ---- submit ----
+  function check(fieldId, ok) { MD.state($(fieldId), "bad", !ok); return ok; }
+  let lastOrder = null;
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    let valid = true;
+    valid &= check("f-date", !!data.arrival);
+    valid &= check("f-name", data.name.trim().length > 1);
+    valid &= check("f-email", /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim()));
+    valid &= check("f-phone", data.phone.replace(/\D/g, "").length >= 9);
+    if (!valid) { document.querySelector('[data-state~="bad"] input').focus(); return; }
+    if (state.kit === "mix" && mixSum() < MIX_MIN) { MD.state($("mix-err"), "show", true); $("contents").scrollIntoView({ block: "center" }); return; }
+
+    const order = {
+      ref: "LND-" + Math.random().toString(36).slice(2, 6).toUpperCase(),
+      kit: state.kit, mixTotal: mixSum(),
+      items: state.kit === "mix" ? [...ITEMS.arrival, ...ITEMS.winter].filter(i => state.mix.has(i[0])).map(i => i[0]) : [],
+      addons: ADDONS.filter(a => state.addons[a.id]).map(a => ({ id: a.id, n: state.addons[a.id] })),
+      total: grandTotal(), deposit: 20,
+      referral: state.referral ? data.referral.trim().toUpperCase() : "",
+      storageInterest: !!data.storage, uni: data.uni, halls: data.halls, building: data.building || "",
+      arrival: data.arrival, name: data.name.trim(), email: data.email.trim(), phone: data.phone.trim(),
+      from: data.from || "", notes: data.notes || "", lang: MD.i18n.lang, placedAt: new Date().toISOString(),
+    };
+
+    const btn = $("submit"); btn.disabled = true; btn.textContent = t("cta.reserving");
+    if (FORM_ENDPOINT) {
+      try {
+        await fetch(FORM_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(orderForBackend(order)) });
+      } catch (err) { console.error("Order could not be sent:", err); }
+    }
+    lastOrder = order;
+    showDone(order);
+  });
+
+  // Human-readable rows, in the visitor's language
+  function summaryRows(o) {
+    const rows = [[t("summary.kit"), o.kit === "mix" ? t("kit.mix.order", { money: money(o.mixTotal) }) : kitName(o.kit)]];
+    if (o.items.length) rows.push([t("summary.items"), o.items.map(i => t("item." + i)).join(", ")]);
+    if (o.addons.length) rows.push([t("summary.addons"), o.addons.map(a => t("summary.addon", { n: a.n, name: t("addon." + a.id) })).join(", ")]);
+    rows.push([t("summary.total"), t("summary.totalv", { total: money(o.total), deposit: money(o.deposit) })],
+              [t("summary.uni"), t("uni." + UNI_KEY[o.uni])],
+              [t("summary.deliver"), t("halls." + HALL_KEY[o.halls]) + (o.building ? ", " + o.building : "")],
+              [t("summary.checkin"), o.arrival], [t("summary.name"), o.name], [t("summary.email"), o.email], [t("summary.whatsapp"), o.phone]);
+    if (o.referral) rows.push([t("summary.referral"), o.referral]);
+    if (o.storageInterest) rows.push([t("summary.storage"), t("summary.storage.v")]);
+    if (o.from) rows.push([t("summary.from"), o.from]);
+    if (o.notes) rows.push([t("summary.notes"), o.notes]);
+    return rows;
+  }
+  // The backend always gets English keys plus the visitor's language code
+  function orderForBackend(o) {
+    const en = MD.i18n.DICTS.en;
+    return { ...o, kit: o.kit === "mix" ? `Mix and match (£${o.mixTotal})` : en[`kit.${o.kit}.name`], items: o.items.map(i => en["item." + i]),
+             addons: o.addons.map(a => `${a.n} × ${en["addon." + a.id]}`), total: "£" + o.total, deposit: "£" + o.deposit };
+  }
+
+  function showDone(o) {
+    $("ref").textContent = o.ref;
+    const rows = summaryRows(o);
+    $("summary").innerHTML = rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
+    const body = rows.map(([k, v]) => `${k}: ${v}`).join("\n");
+    $("mailto").href = `mailto:${ORDER_EMAIL}?subject=${encodeURIComponent(t("mail.subject", { ref: o.ref }))}&body=${encodeURIComponent(body)}`;
+    $("share-code").textContent = o.ref;
+    $("share-pkg").setAttribute("text", t("share.msg", { ref: o.ref, url: PAGE_URL }));
+    $("deposit-pay").setAttribute("ref", o.ref); $("deposit-pay").setAttribute("email", o.email);
+    $("copy").onclick = async () => {
+      try { await navigator.clipboard.writeText(o.ref); $("copy").textContent = t("share.copied"); }
+      catch { $("copy").textContent = o.ref; }
+      setTimeout(() => { $("copy").textContent = t("share.copy"); }, 1800);
+    };
+    document.documentElement.classList.add("submitted");
+    window.scrollTo({ top: 0 });
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+</script>
+</body>
+</html>
