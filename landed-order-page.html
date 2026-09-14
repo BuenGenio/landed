@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landed – Aberdeen arrival kits, delivered to your halls room</title>
+<meta name="description" content="Bedding, kitchen basics and a winter kit waiting in your Aberdeen halls room before you check in. Reserve for £20.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1B2430; --granite: #2A3540; --fog: #EEF1F4; --fog-deep: #D8DFE5;
+    --amber: #F0A030; --amber-deep: #D98A12; --amber-tint: #FCEFD9;
+    --white: #FFFFFF; --muted: #5F6D79; --ok: #1F7A4D; --err: #B3261E;
+    --sea: #D6E2EA; --wood: #B59A7C; --rubber: #B4433A; --card: #E3BE86; --card-dark: #C79A5A;
+    --font: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+    --t: .25s ease;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--white); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-bottom: 120px; }
+  main { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+  button { font: inherit; }
+  svg text { font-family: var(--font); }
+
+  header.top { display: flex; justify-content: space-between; align-items: baseline; padding: 22px 0 8px; }
+  .wordmark { font-weight: 800; font-size: 22px; letter-spacing: -0.02em; }
+  .place { color: var(--muted); font-size: 15px; }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 32px; align-items: center; padding: 24px 0 8px; }
+  .hero h1 { font-size: clamp(38px, 6vw, 58px); line-height: 1.02; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 16px; max-width: 12ch; font-variation-settings: "opsz" 96; }
+  .hero p { font-size: 19px; margin: 0 0 12px; max-width: 34ch; }
+  .hero .terms { color: var(--muted); font-size: 15px; }
+  .room { width: 100%; height: auto; border-radius: 18px; background: var(--fog); }
+  .room .g-arrival, .room .g-winter { opacity: 0; transition: opacity var(--t); }
+  .room.arrival .g-arrival, .room.winter .g-winter { opacity: 1; }
+  .room .g-base { opacity: 1; transition: opacity var(--t); }
+  .room.arrival .g-base { opacity: 0; }
+  .room-cap { color: var(--muted); font-size: 14px; margin: 8px 4px 0; min-height: 1.5em; }
+  @media (max-width: 720px) { .hero { grid-template-columns: 1fr; gap: 18px; } .hero h1 { max-width: none; } }
+
+  section { padding: 34px 0 6px; }
+  h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 14px; }
+  .help { color: var(--muted); font-size: 15px; margin: -6px 0 14px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
+
+  /* kit choice */
+  .kits { display: grid; gap: 12px; }
+  .kit { position: relative; border: 2px solid var(--fog-deep); border-radius: 14px; background: var(--white); padding: 14px 16px; cursor: pointer; display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; transition: border-color var(--t), background var(--t); }
+  .kit input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .kit:has(input:checked) { border-color: var(--ink); background: var(--fog); }
+  .kit:has(input:focus-visible) { outline: 3px solid var(--amber); outline-offset: 3px; }
+  .kit svg.ico { width: 44px; height: 44px; }
+  .kit .name { font-weight: 700; font-size: 19px; }
+  .kit .line { color: var(--muted); font-size: 15px; }
+  .kit .save { color: var(--ok); font-weight: 600; }
+  .kit .price { font-weight: 800; font-size: 22px; white-space: nowrap; }
+
+  /* contents grid */
+  .contents h3 { font-size: 17px; font-weight: 700; margin: 18px 0 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .item { background: var(--fog); border-radius: 12px; padding: 10px 8px 8px; text-align: center; font-size: 13px; line-height: 1.25; }
+  .item svg { width: 34px; height: 34px; display: block; margin: 0 auto 6px; }
+  .item.winter { background: var(--amber-tint); }
+  button.item { border: 2px solid transparent; cursor: pointer; font: inherit; line-height: 1.25; color: var(--ink); width: 100%; transition: border-color var(--t), background var(--t); }
+  button.item .pr { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; }
+  button.item.on { border-color: var(--ink); background: var(--white); }
+  button.item.on .pr { color: var(--ink); font-weight: 700; }
+  button.item:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+  .nudge { display: none; margin-top: 12px; padding: 12px 14px; background: var(--amber-tint); border-radius: 12px; font-size: 15px; align-items: center; gap: 12px; justify-content: space-between; flex-wrap: wrap; }
+  .nudge.show { display: flex; }
+  .mix-err { display: none; color: var(--err); font-size: 15px; margin-top: 8px; }
+  .mix-err.show { display: block; }
+
+  /* DIY compare */
+  .compare { margin-top: 18px; background: var(--fog); border-radius: 14px; padding: 14px 16px; }
+  .compare h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
+  .bar-row { display: grid; grid-template-columns: 10ch 1fr auto; align-items: center; gap: 10px; font-size: 15px; margin: 6px 0; }
+  .bar { height: 14px; border-radius: 7px; background: var(--fog-deep); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--granite); border-radius: 7px; width: 0; transition: width .4s ease; }
+  .bar-row.us .bar i { background: var(--amber); }
+  .bar-row b { font-weight: 700; }
+  .compare .foot { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+
+  /* add-ons */
+  .addons { display: grid; gap: 8px; }
+  .addon { display: grid; grid-template-columns: 34px 1fr auto auto; gap: 12px; align-items: center; padding: 10px 12px; border: 2px solid var(--fog-deep); border-radius: 12px; }
+  .addon.on { border-color: var(--ink); }
+  .addon svg { width: 30px; height: 30px; }
+  .addon .n { font-weight: 600; }
+  .addon .p { color: var(--muted); font-size: 15px; }
+  .stepper { display: inline-flex; align-items: center; border: 2px solid var(--fog-deep); border-radius: 999px; }
+  .stepper button { width: 36px; height: 34px; border: 0; background: transparent; font-size: 20px; font-weight: 700; cursor: pointer; color: var(--ink); border-radius: 999px; }
+  .stepper button:focus-visible { outline: 3px solid var(--amber); }
+  .stepper output { min-width: 22px; text-align: center; font-weight: 700; }
+
+  /* storage */
+  .storage { margin-top: 12px; border-radius: 14px; background: var(--fog); padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+  .storage input { width: 22px; height: 22px; margin: 3px 0 0; accent-color: var(--ink); flex: none; }
+  .storage label { cursor: pointer; }
+  .storage .name { font-weight: 700; }
+  .storage .line { color: var(--muted); font-size: 15px; }
+
+  /* halls + map */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .chip span { display: inline-block; padding: 10px 16px; border-radius: 999px; border: 2px solid var(--fog-deep); font-weight: 600; font-size: 16px; cursor: pointer; transition: background var(--t), color var(--t); }
+  .chip:has(input:checked) span { background: var(--ink); color: var(--white); border-color: var(--ink); }
+  .chip:has(input:focus-visible) span { outline: 3px solid var(--amber); outline-offset: 2px; }
+  .map { width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto; }
+  .map .stop circle { transition: r var(--t), fill var(--t); }
+  .map .stop text { font-size: 12px; fill: var(--muted); }
+  .map .stop.on circle { fill: var(--amber); r: 9; }
+  .map .stop.on text { fill: var(--ink); font-weight: 700; }
+  .map .anywhere { opacity: 0; transition: opacity var(--t); }
+  .map.anywhere .anywhere { opacity: 1; }
+  .map-cap { text-align: center; color: var(--muted); font-size: 14px; margin-top: 6px; min-height: 1.5em; }
+  .date-info { margin-top: 8px; padding: 10px 14px; background: var(--amber-tint); border-radius: 10px; font-size: 15px; display: none; }
+  .date-info.show { display: block; }
+
+  /* fields */
+  .field { margin-bottom: 16px; }
+  label.lbl { display: block; font-weight: 600; font-size: 16px; margin-bottom: 6px; }
+  label.lbl small { font-weight: 400; color: var(--muted); }
+  input[type=text], input[type=email], input[type=tel], input[type=date], textarea { width: 100%; font: inherit; font-size: 17px; color: var(--ink); border: 2px solid var(--fog-deep); border-radius: 8px; padding: 12px 14px; background: var(--white); }
+  textarea { min-height: 84px; resize: vertical; }
+  input:focus-visible, textarea:focus-visible { outline: 3px solid var(--amber); outline-offset: 1px; border-color: var(--ink); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 460px) { .two { grid-template-columns: 1fr; } }
+  .error { color: var(--err); font-size: 15px; margin-top: 6px; display: none; }
+  .field.bad input, .field.bad textarea { border-color: var(--err); }
+  .field.bad .error { display: block; }
+  .ref-note { font-size: 15px; margin-top: 6px; min-height: 1.5em; }
+  .ref-note.ok { color: var(--ok); font-weight: 600; }
+  .ref-note.no { color: var(--muted); }
+
+  /* how + faq */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .step { background: var(--fog); border-radius: 14px; padding: 16px; }
+  .step svg { width: 36px; height: 36px; display: block; margin-bottom: 8px; }
+  .step b { display: block; margin-bottom: 4px; }
+  .step p { margin: 0; font-size: 15px; color: var(--granite); }
+  @media (max-width: 720px) { .steps { grid-template-columns: 1fr; } }
+  .faq details { border-top: 2px solid var(--fog); padding: 4px 0; }
+  .faq details:last-child { border-bottom: 2px solid var(--fog); }
+  .faq summary { list-style: none; cursor: pointer; font-weight: 600; padding: 10px 28px 10px 0; position: relative; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; position: absolute; right: 4px; top: 8px; font-size: 22px; font-weight: 400; color: var(--muted); }
+  .faq details[open] summary::after { content: "–"; }
+  .faq details p { margin: 0 0 12px; color: var(--granite); font-size: 16px; }
+
+  footer { color: var(--muted); font-size: 14px; padding: 30px 0 10px; }
+
+  /* sticky bar */
+  .bar-fixed { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--white); border-top: 2px solid var(--fog); padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); }
+  .bar-fixed .inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  .bar-fixed .total { line-height: 1.2; }
+  .bar-fixed .total b { font-size: 22px; font-weight: 800; display: block; }
+  .bar-fixed .total span { color: var(--muted); font-size: 14px; }
+  .bar-fixed .total em { color: var(--ok); font-style: normal; font-size: 14px; font-weight: 600; }
+  .cta { font-weight: 700; font-size: 17px; color: var(--ink); background: var(--amber); border: 0; border-radius: 999px; padding: 14px 24px; cursor: pointer; white-space: nowrap; }
+  .cta:hover { background: var(--amber-deep); }
+  .cta:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .cta[disabled] { opacity: .6; cursor: default; }
+  .btn { font-weight: 600; font-size: 15px; color: var(--ink); background: var(--fog); border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer; text-decoration: none; display: inline-block; }
+  .btn:hover { background: var(--fog-deep); }
+  .btn:focus-visible { outline: 3px solid var(--amber); }
+
+  /* confirmation */
+  .done { display: none; padding: 36px 0; max-width: 620px; }
+  .done h2 { font-size: 32px; letter-spacing: -0.02em; }
+  .done .ref { font-weight: 800; font-size: 24px; background: var(--fog); border-radius: 10px; padding: 12px 16px; display: inline-block; margin: 8px 0 18px; }
+  .done dl { margin: 0 0 20px; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; font-size: 16px; }
+  .done dt { color: var(--muted); }
+  .done dd { margin: 0; }
+  .done a.mail { color: var(--ink); font-weight: 600; }
+  .share { background: var(--amber-tint); border-radius: 14px; padding: 16px; margin: 18px 0; }
+  .share b { display: block; margin-bottom: 6px; }
+  .share .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  .share code { font-family: inherit; font-weight: 800; font-size: 18px; background: var(--white); padding: 6px 10px; border-radius: 8px; }
+  body.submitted form, body.submitted .bar-fixed, body.submitted .hero, body.submitted .after-form { display: none; }
+  body.submitted .done { display: block; }
+  body.submitted { padding-bottom: 20px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<!-- Icon library: original line icons for kit contents and steps -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="i-duvet"><rect x="6" y="14" width="36" height="22" rx="7"/><path d="M6 25h36M14 14v-3a4 4 0 0 1 8 0v3"/></g>
+    <g id="i-pillow"><rect x="7" y="15" width="34" height="18" rx="9"/><path d="M14 20c3 3 3 6 0 9M34 20c-3 3-3 6 0 9"/></g>
+    <g id="i-sheet"><rect x="8" y="10" width="32" height="28" rx="3"/><path d="M8 30l32-12"/></g>
+    <g id="i-towel"><rect x="10" y="8" width="28" height="32" rx="4"/><path d="M10 18h28M10 30h28"/></g>
+    <g id="i-plate"><circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="8"/></g>
+    <g id="i-mug"><rect x="10" y="14" width="22" height="24" rx="3"/><path d="M32 20h4a5 5 0 0 1 0 10h-4"/></g>
+    <g id="i-cutlery"><path d="M14 8v32M14 8v10M10 8v10M18 8v10M10 18c0 3 8 3 8 0M32 8c-4 6-4 14 0 16v16"/></g>
+    <g id="i-pan"><circle cx="20" cy="26" r="13"/><path d="M33 22l10-6"/></g>
+    <g id="i-kettle"><path d="M12 20h22l-3 20H15z"/><path d="M34 22l6-6M16 20a8 8 0 0 1 14 0"/></g>
+    <g id="i-board"><rect x="8" y="12" width="32" height="24" rx="4"/><path d="M14 18l12 12M28 18l-4 4"/></g>
+    <g id="i-plug"><rect x="8" y="12" width="32" height="24" rx="5"/><path d="M24 18v6M17 26v4M31 26v4"/></g>
+    <g id="i-bag"><path d="M12 18h24l2 22H10z"/><path d="M12 18c0-6 24-6 24 0"/></g>
+    <g id="i-bottle"><rect x="10" y="18" width="24" height="22" rx="9"/><path d="M34 26h5M34 32h5M22 18V9h4"/></g>
+    <g id="i-thermal"><path d="M17 10l7 3 7-3 8 6-5 6-3-2v20H17V20l-3 2-5-6z"/></g>
+    <g id="i-socks"><path d="M18 8h12v16l8 8-6 8-14-10z"/><path d="M18 14h12"/></g>
+    <g id="i-beanie"><path d="M10 34a14 14 0 0 1 28 0z"/><rect x="8" y="34" width="32" height="6" rx="3"/><circle cx="24" cy="12" r="4"/></g>
+    <g id="i-vitamin"><rect x="14" y="14" width="20" height="26" rx="4"/><rect x="17" y="8" width="14" height="6" rx="2"/><path d="M20 28h8"/></g>
+    <g id="i-mask"><path d="M6 22c4-8 12-8 18-4 6-4 14-4 18 4-2 10-10 12-18 6-8 6-16 4-18-6z"/></g>
+    <g id="i-tea"><rect x="12" y="20" width="20" height="18" rx="3"/><path d="M22 20V8l10 4"/></g>
+    <g id="i-rowie"><ellipse cx="24" cy="26" rx="16" ry="10"/><path d="M14 22c4 2 16 2 20 0M18 30h2M28 30h2"/></g>
+    <g id="i-lamp"><path d="M14 10h20l6 14H8z"/><path d="M24 24v14M14 38h20"/></g>
+    <g id="i-rack"><path d="M8 40l8-28h16l8 28M12 26h24M14 32h20"/></g>
+    <g id="i-topper"><rect x="6" y="18" width="36" height="12" rx="6"/><path d="M12 24h4M22 24h4M32 24h4"/></g>
+    <g id="i-box"><path d="M8 18l16-8 16 8-16 8z"/><path d="M8 18v14l16 8 16-8V18M24 26v14"/></g>
+    <g id="i-chat"><path d="M8 12h32v20H22l-8 7v-7H8z"/><path d="M16 22h16"/></g>
+    <g id="i-mix"><rect x="8" y="8" width="14" height="14" rx="3"/><rect x="26" y="8" width="14" height="14" rx="3"/><rect x="8" y="26" width="14" height="14" rx="3"/><path d="M28 33l4 4 8-9"/></g>
+    <g id="i-key"><circle cx="16" cy="24" r="8"/><path d="M24 24h16M34 24v6M39 24v4"/></g>
+  </defs>
+</svg>
+
+<main>
+  <header class="top">
+    <div class="wordmark">Landed</div>
+    <div class="place">Aberdeen</div>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>Your room, ready when you land.</h1>
+      <p>Bedding, kitchen basics and the things everyone forgets, waiting in your Aberdeen halls room before you check in.</p>
+      <p class="terms">Reserve with a £20 deposit. Pay the rest at your door on delivery day. Cancel free up to 14 days before you arrive.</p>
+    </div>
+    <div>
+      <!-- Halls room illustration. Swap for a photo of the real sample kit once you have one. -->
+      <svg class="room arrival winter" id="room" viewBox="0 0 480 320" role="img" aria-label="A halls room in Aberdeen with the kit unpacked">
+        <rect width="480" height="240" fill="#EEF1F4"/>
+        <rect y="240" width="480" height="80" fill="#D8DFE5"/>
+        <rect y="236" width="480" height="6" fill="#C9D3DC"/>
+        <!-- window -->
+        <rect x="292" y="28" width="150" height="116" rx="6" fill="#FFFFFF" stroke="#2A3540" stroke-width="6"/>
+        <clipPath id="win"><rect x="298" y="34" width="138" height="104"/></clipPath>
+        <g clip-path="url(#win)">
+          <rect x="298" y="34" width="138" height="104" fill="#2A3540"/>
+          <g fill="#1B2430"><rect x="298" y="92" width="26" height="46"/><rect x="324" y="78" width="20" height="60"/><rect x="344" y="100" width="30" height="38"/><rect x="374" y="70" width="24" height="68"/><rect x="398" y="96" width="38" height="42"/></g>
+          <g fill="#F0A030"><rect x="304" y="100" width="5" height="6"/><rect x="330" y="86" width="5" height="6"/><rect x="380" y="80" width="5" height="6"/><rect x="380" y="96" width="5" height="6"/><rect x="408" y="106" width="5" height="6"/><rect x="350" y="110" width="5" height="6"/></g>
+          <g stroke="#FFFFFF" stroke-opacity=".35" stroke-width="2" stroke-linecap="round">
+            <path d="M310 40l-6 14M340 46l-6 14M370 38l-6 14M400 50l-6 14M424 40l-6 14M325 66l-6 14M355 62l-6 14M386 70l-6 14M412 74l-6 14"/>
+          </g>
+          <g class="g-winter" fill="#FFFFFF"><circle cx="306" cy="48" r="2.5"/><circle cx="336" cy="40" r="2"/><circle cx="360" cy="56" r="2.5"/><circle cx="392" cy="44" r="2"/><circle cx="420" cy="60" r="2.5"/><circle cx="318" cy="76" r="2"/><circle cx="378" cy="74" r="2.5"/><circle cx="428" cy="88" r="2"/></g>
+        </g>
+        <path d="M367 34v104" stroke="#2A3540" stroke-width="4"/>
+        <!-- radiator -->
+        <rect x="300" y="154" width="134" height="40" rx="6" fill="#FFFFFF" stroke="#C9D3DC" stroke-width="3"/>
+        <g stroke="#D8DFE5" stroke-width="3"><path d="M314 158v32M330 158v32M346 158v32M362 158v32M378 158v32M394 158v32M410 158v32M426 158v32"/></g>
+        <g class="g-winter"><path d="M318 152v22l-4 4h12l-4-4v-22" fill="#F0A030" stroke="#2A3540" stroke-width="2" stroke-linejoin="round"/><path d="M340 152v22l-4 4h12l-4-4v-22" fill="#F0A030" stroke="#2A3540" stroke-width="2" stroke-linejoin="round"/></g>
+        <!-- bed -->
+        <rect x="30" y="112" width="16" height="150" rx="4" fill="#B59A7C"/>
+        <rect x="46" y="214" width="214" height="12" fill="#B59A7C"/>
+        <rect x="52" y="226" width="12" height="36" fill="#B59A7C"/><rect x="242" y="226" width="12" height="36" fill="#B59A7C"/>
+        <rect x="46" y="184" width="214" height="32" rx="4" fill="#C9D3DC"/>
+        <!-- plain bedding (your own) -->
+        <g class="g-base"><rect x="46" y="176" width="214" height="40" rx="8" fill="#DCE3E9" stroke="#C9D3DC" stroke-width="2"/><rect x="50" y="160" width="60" height="22" rx="8" fill="#E9EDF1" stroke="#C9D3DC" stroke-width="2"/></g>
+        <!-- arrival kit bedding -->
+        <g class="g-arrival">
+          <rect x="46" y="172" width="214" height="44" rx="9" fill="#FFFFFF" stroke="#D8DFE5" stroke-width="2"/>
+          <rect x="46" y="194" width="214" height="14" fill="#F0A030"/>
+          <path d="M46 172c40 6 174 6 214 0" fill="none" stroke="#D8DFE5" stroke-width="2"/>
+          <rect x="50" y="150" width="68" height="26" rx="10" fill="#FFFFFF" stroke="#D8DFE5" stroke-width="2"/>
+          <rect x="62" y="142" width="68" height="26" rx="10" fill="#FFFFFF" stroke="#D8DFE5" stroke-width="2"/>
+        </g>
+        <!-- winter kit on the bed -->
+        <g class="g-winter">
+          <rect x="160" y="150" width="46" height="30" rx="13" fill="#B4433A"/><rect x="204" y="159" width="10" height="12" rx="2" fill="#B4433A"/><rect x="212" y="157" width="8" height="16" rx="3" fill="#2A3540"/>
+          <path d="M166 160h30" stroke="#FFFFFF" stroke-opacity=".4" stroke-width="3" stroke-linecap="round"/>
+          <path d="M28 112a10 10 0 0 1 20 0v6H28z" fill="#F0A030"/><circle cx="38" cy="100" r="5" fill="#FFFFFF" stroke="#F0A030" stroke-width="2"/>
+        </g>
+        <!-- bedside table -->
+        <rect x="266" y="204" width="62" height="58" rx="3" fill="#B59A7C"/><rect x="262" y="200" width="70" height="8" rx="2" fill="#A98A6B"/>
+        <g class="g-arrival">
+          <rect x="276" y="172" width="30" height="28" rx="6" fill="#2A3540"/><path d="M306 180l8-6" stroke="#2A3540" stroke-width="5" stroke-linecap="round"/><path d="M280 172a11 11 0 0 1 22 0" fill="none" stroke="#2A3540" stroke-width="3"/>
+          <rect x="310" y="184" width="14" height="16" rx="2" fill="#FFFFFF" stroke="#2A3540" stroke-width="2"/><path d="M324 188a4 4 0 0 1 0 8" fill="none" stroke="#2A3540" stroke-width="2"/>
+        </g>
+        <g class="g-winter" fill="none" stroke="#AEBAC4" stroke-width="2" stroke-linecap="round"><path d="M314 178c-3-4 3-6 0-10M320 178c-3-4 3-6 0-10"/></g>
+        <!-- the box -->
+        <path d="M140 262l-22-14h112l-20 14z" fill="#C79A5A"/>
+        <rect x="140" y="252" width="110" height="60" rx="3" fill="#E3BE86" stroke="#C79A5A" stroke-width="3"/>
+        <path d="M140 252l-24-16M250 252l24-16" stroke="#C79A5A" stroke-width="3" stroke-linecap="round"/>
+        <rect x="168" y="272" width="54" height="22" rx="4" fill="#FFFFFF"/>
+        <text x="195" y="288" text-anchor="middle" font-size="14" font-weight="800" fill="#F0A030">Landed</text>
+        <g class="g-arrival"><rect x="150" y="238" width="30" height="16" rx="8" fill="#FFFFFF" stroke="#D8DFE5" stroke-width="2"/><rect x="150" y="244" width="30" height="4" fill="#F0A030"/></g>
+        <g class="g-winter"><path d="M226 240h14v10l-8 4-6-4z" fill="#F0A030" stroke="#2A3540" stroke-width="2" stroke-linejoin="round"/></g>
+      </svg>
+      <div class="room-cap" id="room-cap"></div>
+    </div>
+  </div>
+
+  <form id="order" novalidate>
+    <section>
+      <h2>Choose your kit</h2>
+      <div class="cols">
+        <div>
+          <div class="kits" id="kits">
+            <label class="kit">
+              <input type="radio" name="kit" value="arrival" data-price="95">
+              <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="#2A3540" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-duvet"/></svg>
+              <div><div class="name">Arrival kit</div><div class="line">Everything for the first night and the first week.</div></div>
+              <div class="price">£95</div>
+            </label>
+            <label class="kit">
+              <input type="radio" name="kit" value="winter" data-price="45">
+              <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="#2A3540" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bottle"/></svg>
+              <div><div class="name">Winter kit</div><div class="line">For the dark, the wind and the granite. Delivered in October.</div></div>
+              <div class="price">£45</div>
+            </label>
+            <label class="kit">
+              <input type="radio" name="kit" value="both" data-price="125" checked>
+              <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="#2A3540" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg>
+              <div><div class="name">Both kits</div><div class="line">Arrival kit now, winter kit in October. <span class="save">Saves £15.</span></div></div>
+              <div class="price">£125</div>
+            </label>
+            <label class="kit">
+              <input type="radio" name="kit" value="mix">
+              <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="#2A3540" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-mix"/></svg>
+              <div><div class="name">Mix and match</div><div class="line">Pick only what you need from either box. Orders from £30.</div></div>
+              <div class="price" id="mix-price">from £3</div>
+            </label>
+          </div>
+
+          <div class="compare" id="compare">
+            <h3>Buying it yourself</h3>
+            <div class="bar-row diy"><span>Retail park</span><div class="bar"><i id="bar-diy"></i></div><b id="diy-price"></b></div>
+            <div class="bar-row us"><span>Landed</span><div class="bar"><i id="bar-us"></i></div><b id="us-price"></b></div>
+            <p class="foot" id="compare-foot"></p>
+          </div>
+        </div>
+
+        <div class="contents">
+          <h3 id="contents-title">What's in the box</h3>
+          <div class="grid" id="contents"></div>
+          <div class="nudge" id="nudge"><span id="nudge-text"></span><button class="btn" type="button" id="nudge-btn"></button></div>
+          <div class="mix-err" id="mix-err">Mix and match orders start at £30. Add a few more items or pick a kit.</div>
+
+          <h3>Add to your box</h3>
+          <div class="addons" id="addons"></div>
+
+          <div class="storage">
+            <input type="checkbox" id="storage" name="storage">
+            <label for="storage">
+              <div class="name">Summer storage, from May 2027</div>
+              <div class="line">We collect your boxes from halls in May, keep them over summer and deliver them to your new address. £45 a box. Tick to be told when booking opens; nothing to pay now.</div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Where should we deliver?</h2>
+      <div class="cols">
+        <div>
+          <div class="chips" id="halls">
+            <label class="chip"><input type="radio" name="halls" value="Hillhead" checked><span>Hillhead</span></label>
+            <label class="chip"><input type="radio" name="halls" value="Garthdee"><span>Garthdee</span></label>
+            <label class="chip"><input type="radio" name="halls" value="City centre halls"><span>City centre halls</span></label>
+            <label class="chip"><input type="radio" name="halls" value="Private flat"><span>Private flat</span></label>
+          </div>
+          <div class="field">
+            <label class="lbl" for="building">Building, flat and room <small>(if you know it yet)</small></label>
+            <input type="text" id="building" name="building" placeholder="e.g. Crombie Hall, flat 12, room C" autocomplete="off">
+          </div>
+          <div class="field" id="f-date">
+            <label class="lbl" for="arrival">Check-in date</label>
+            <input type="date" id="arrival" name="arrival" required>
+            <div class="error">Tell us the day you check in so the kit is there first.</div>
+            <div class="date-info" id="date-info"></div>
+          </div>
+        </div>
+        <div>
+          <!-- Schematic route map: Hillhead by the Don, the centre by the harbour, Garthdee by the Dee -->
+          <svg class="map" id="map" viewBox="0 0 220 260" role="img" aria-label="Map of the delivery route through Aberdeen">
+            <rect width="220" height="260" rx="14" fill="#EEF1F4"/>
+            <path d="M168 0c10 30-10 60 4 90s-8 60 6 90 -6 60 4 80h38V0z" fill="#D6E2EA"/>
+            <path d="M0 42c40-4 70 10 100 6s40-8 52-2" fill="none" stroke="#B8CAD8" stroke-width="5" stroke-linecap="round"/>
+            <path d="M0 214c40-8 80 4 120 0s26-2 40 4" fill="none" stroke="#B8CAD8" stroke-width="5" stroke-linecap="round"/>
+            <text x="200" y="130" font-size="11" fill="#7A8B99" transform="rotate(90 200 130)" text-anchor="middle">North Sea</text>
+            <text x="12" y="34" font-size="10" fill="#7A8B99">River Don</text>
+            <text x="12" y="234" font-size="10" fill="#7A8B99">River Dee</text>
+            <path d="M70 60v140" stroke="#F0A030" stroke-width="4" stroke-linecap="round"/>
+            <circle class="anywhere" cx="86" cy="130" r="74" fill="none" stroke="#2A3540" stroke-opacity=".3" stroke-width="2" stroke-dasharray="6 6"/>
+            <g class="stop" data-halls="Hillhead"><circle cx="70" cy="60" r="7" fill="#FFFFFF" stroke="#F0A030" stroke-width="3"/><text x="86" y="58">Hillhead</text><text x="86" y="71" font-size="10">University of Aberdeen</text></g>
+            <g class="stop" data-halls="City centre halls"><circle cx="70" cy="130" r="7" fill="#FFFFFF" stroke="#F0A030" stroke-width="3"/><text x="86" y="128">City centre</text><text x="86" y="141" font-size="10">Union Street area</text></g>
+            <g class="stop" data-halls="Garthdee"><circle cx="70" cy="200" r="7" fill="#FFFFFF" stroke="#F0A030" stroke-width="3"/><text x="86" y="198">Garthdee</text><text x="86" y="211" font-size="10">RGU campus</text></g>
+          </svg>
+          <div class="map-cap" id="map-cap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>About you</h2>
+      <div class="cols">
+        <div>
+          <div class="field" id="f-name">
+            <label class="lbl" for="name">Name</label>
+            <input type="text" id="name" name="name" autocomplete="name" required>
+            <div class="error">We need a name for the label on the box.</div>
+          </div>
+          <div class="field" id="f-email">
+            <label class="lbl" for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" inputmode="email" required>
+            <div class="error">Enter an email address; the deposit link goes here.</div>
+          </div>
+          <div class="field" id="f-phone">
+            <label class="lbl" for="phone">WhatsApp number <small>(with country code)</small></label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="+44 7…" required>
+            <div class="error">A WhatsApp number so we can message you on delivery day.</div>
+          </div>
+        </div>
+        <div>
+          <div class="field">
+            <label class="lbl" for="from">Arriving from <small>(country, optional)</small></label>
+            <input type="text" id="from" name="from" autocomplete="country-name">
+          </div>
+          <div class="field">
+            <label class="lbl" for="referral">Referral code <small>(optional, £10 off)</small></label>
+            <input type="text" id="referral" name="referral" placeholder="LND-XXXX" autocomplete="off" autocapitalize="characters">
+            <div class="ref-note" id="ref-note"></div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="notes">Anything we should know? <small>(optional)</small></label>
+            <textarea id="notes" name="notes" placeholder="Allergies, a double bed, landing late at night…"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="bar-fixed">
+      <div class="inner">
+        <div class="total"><b id="total">£125</b><span id="total-sub">£20 deposit now, rest on delivery</span></div>
+        <button class="cta" type="submit" id="submit">Reserve my kit</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="after-form">
+    <section>
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step"><svg viewBox="0 0 48 48" fill="none" stroke="#F0A030" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg><b>Reserve</b><p>Pick a kit here. We email a £20 deposit link within 24 hours and hold your box.</p></div>
+        <div class="step"><svg viewBox="0 0 48 48" fill="none" stroke="#F0A030" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chat"/></svg><b>Confirm</b><p>A week before you arrive we message you on WhatsApp to check the building and room.</p></div>
+        <div class="step"><svg viewBox="0 0 48 48" fill="none" stroke="#F0A030" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-key"/></svg><b>Land</b><p>On check-in day the box is in your room or waiting at reception. Pay the balance by card or cash at the door.</p></div>
+      </div>
+    </section>
+
+    <section class="faq">
+      <h2>Questions people ask</h2>
+      <details><summary>What if my room changes after I reserve?</summary><p>Nothing to do now. We confirm the building and room on WhatsApp the week before delivery, so put down whatever you know today.</p></details>
+      <details><summary>I'm landing late at night. Will the box still be there?</summary><p>Yes. If halls reception can't let us into your room, we leave it with reception under your name and message you the details.</p></details>
+      <details><summary>Can I cancel?</summary><p>Free cancellation up to 14 days before your check-in date and the £20 deposit comes straight back. Inside 14 days the stock is already bought, so the deposit is kept.</p></details>
+      <details><summary>I already have a duvet. Can I leave things out?</summary><p>Choose "Mix and match" and tap only the items you need; each has its own price and orders start at £30. If you've already reserved a kit, message us on WhatsApp and we'll swap the duvet for something of the same value.</p></details>
+      <details><summary>Why a deposit and not the full amount?</summary><p>The £20 tells us you're serious, so we can buy the stock. The rest is paid when the box is in your hands; you never pay in full for something you haven't seen.</p></details>
+    </section>
+  </div>
+
+  <div class="done" id="done">
+    <h2>Reserved.</h2>
+    <p>Your order reference:</p>
+    <div class="ref" id="ref"></div>
+    <dl id="summary"></dl>
+    <p>We'll email your £20 deposit link within 24 hours. The balance is paid at your door on delivery day.</p>
+    <div class="share">
+      <b>Give a friend £10, get £10 back</b>
+      Your reference is also your referral code. Anyone who reserves with it gets £10 off, and we take £10 off your balance.
+      <div class="row"><code id="share-code"></code><button class="btn" type="button" id="copy">Copy code</button><a class="btn" id="wa" href="#" target="_blank" rel="noopener">Share on WhatsApp</a></div>
+    </div>
+    <p>If nothing arrives, or you'd rather talk to a person, <a class="mail" id="mailto" href="#">send us this order by email</a>.</p>
+  </div>
+
+  <footer>Landed is a small Aberdeen business run by students, for students. Deposits are refundable up to 14 days before your check-in date.</footer>
+</main>
+
+<script>
+  // Where reservations go. Point this at your form backend (Formspree, Tally, a Google Apps Script,
+  // your own API). Leave empty and the page still works: it shows a confirmation and an email fallback.
+  const FORM_ENDPOINT = "";
+  const ORDER_EMAIL = "hello@example.com";
+  const PAGE_URL = "https://landed.scot";
+
+  const KITS = {
+    arrival: { name: "Arrival kit", price: 95, diy: 140, cap: "Made bed, kettle on, first night sorted." },
+    winter:  { name: "Winter kit",  price: 45, diy: 65,  cap: "Hot water bottle on the bed, snow on the granite." },
+    both:    { name: "Both kits",   price: 125, diy: 205, cap: "September's box now, October's when the dark arrives." },
+    mix:     { name: "Mix and match", price: 0, diy: 0, cap: "Pick what you need. The room fills up as you go." },
+  };
+  const ITEMS = {
+    arrival: [
+      ["i-duvet", "Duvet, 10.5 tog, and cover", 20], ["i-pillow", "Two pillows and cases", 10], ["i-sheet", "Fitted sheet and protector", 12],
+      ["i-towel", "Bath and hand towel", 10], ["i-plate", "Two plates, two bowls", 9], ["i-mug", "Two mugs", 5], ["i-cutlery", "Cutlery for two", 6],
+      ["i-pan", "Frying pan and saucepan", 16], ["i-kettle", "Kettle", 14], ["i-board", "Chopping board and knife", 7], ["i-plug", "UK adaptor and extension lead", 8],
+      ["i-bag", "Laundry bag and tea towels", 5],
+    ],
+    winter: [
+      ["i-bottle", "Hot water bottle", 12], ["i-thermal", "Thermal base layer", 14], ["i-socks", "Thick wool-mix socks", 7], ["i-beanie", "Beanie", 7],
+      ["i-vitamin", "Vitamin D, 3 months", 6], ["i-mask", "Blackout eye mask", 5], ["i-tea", "Local tea", 4], ["i-rowie", "A bag of rowies", 3],
+    ],
+  };
+  const ADDONS = [
+    { id: "pillow", icon: "i-pillow", name: "Extra pillow", price: 8 },
+    { id: "topper", icon: "i-topper", name: "Mattress topper", price: 25 },
+    { id: "lamp", icon: "i-lamp", name: "Desk lamp", price: 12 },
+    { id: "rack", icon: "i-rack", name: "Clothes drying rack", price: 15 },
+    { id: "crockery", icon: "i-plate", name: "Second crockery set", price: 10 },
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  const form = $("order");
+  const MIX_MIN = 30;
+  const state = { kit: "both", addons: {}, referral: false, mix: new Set() };
+  const mixSum = (group) => (group ? ITEMS[group] : [...ITEMS.arrival, ...ITEMS.winter])
+    .filter(i => state.mix.has(i[1])).reduce((s, i) => s + i[2], 0);
+
+  const svgIcon = (id, stroke = "#2A3540") =>
+    `<svg viewBox="0 0 48 48" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#${id}"/></svg>`;
+
+  // ---- kit + contents ----
+  function renderContents() {
+    const kit = state.kit, mix = kit === "mix";
+    const tag = (arr, cls) => arr.map(i => [...i, cls]);
+    const list = (kit === "both" || mix) ? [...tag(ITEMS.arrival, ""), ...tag(ITEMS.winter, "winter")]
+               : tag(ITEMS[kit], kit === "winter" ? "winter" : "");
+    $("contents").innerHTML = list.map(([icon, name, price, cls]) => mix
+      ? `<button type="button" class="item ${cls} ${state.mix.has(name) ? "on" : ""}" data-name="${name}" aria-pressed="${state.mix.has(name)}">${svgIcon(icon)}${name}<span class="pr">£${price}</span></button>`
+      : `<div class="item ${cls}">${svgIcon(icon)}${name}</div>`).join("");
+    $("contents-title").textContent = mix ? "Tap what you need" : kit === "both" ? "What's in the boxes" : "What's in the box";
+
+    const hasA = mix ? ITEMS.arrival.some(i => state.mix.has(i[1])) : kit !== "winter";
+    const hasW = mix ? ITEMS.winter.some(i => state.mix.has(i[1])) : kit !== "arrival";
+    const room = $("room");
+    room.classList.toggle("arrival", hasA);
+    room.classList.toggle("winter", hasW);
+    $("room-cap").textContent = KITS[kit].cap;
+
+    const price = mix ? mixSum() : KITS[kit].price;
+    const diy = mix ? Math.round(price * 1.2) : KITS[kit].diy;
+    const max = 220;
+    $("bar-diy").style.width = (diy / max * 100) + "%";
+    $("bar-us").style.width = (price / max * 100) + "%";
+    $("diy-price").textContent = "~£" + diy;
+    $("us-price").textContent = "£" + price;
+    $("compare-foot").textContent = kit === "winter"
+      ? "Rough cost of the same items from town, before the bus fare and the hunt for a hot water bottle in September."
+      : "Rough cost of the same items from the retail park, before the bus fare, a free afternoon and carrying it all back.";
+    $("mix-price").textContent = mix && price ? "£" + price : "from £3";
+    renderNudge();
+  }
+
+  // When the pick-and-mix costs more than a kit that contains it all, say so
+  function renderNudge() {
+    const n = $("nudge");
+    if (state.kit !== "mix") { n.classList.remove("show"); return; }
+    const a = mixSum("arrival"), w = mixSum("winter"), both = a + w;
+    let target = null;
+    if (a > 0 && w > 0 && both >= KITS.both.price) target = "both";
+    else if (w === 0 && a >= KITS.arrival.price) target = "arrival";
+    else if (a === 0 && w >= KITS.winter.price) target = "winter";
+    if (!target) { n.classList.remove("show"); return; }
+    $("nudge-text").textContent = `You've picked £${both} of items. The ${KITS[target].name.toLowerCase()} has all of this and more for £${KITS[target].price}.`;
+    $("nudge-btn").textContent = `Switch to ${KITS[target].name.toLowerCase()}`;
+    $("nudge-btn").onclick = () => { form.querySelector(`input[name="kit"][value="${target}"]`).click(); };
+    n.classList.add("show");
+  }
+  $("contents").addEventListener("click", (e) => {
+    const b = e.target.closest("button.item"); if (!b) return;
+    const name = b.dataset.name;
+    state.mix.has(name) ? state.mix.delete(name) : state.mix.add(name);
+    b.classList.toggle("on", state.mix.has(name)); b.setAttribute("aria-pressed", state.mix.has(name));
+    $("mix-err").classList.remove("show");
+    renderContents(); renderDate(); updateTotal();
+  });
+
+  // ---- add-ons ----
+  function renderAddons() {
+    $("addons").innerHTML = ADDONS.map(a => `
+      <div class="addon" data-id="${a.id}">
+        ${svgIcon(a.icon)}
+        <div><div class="n">${a.name}</div><div class="p">£${a.price}</div></div>
+        <div></div>
+        <div class="stepper" role="group" aria-label="${a.name} quantity">
+          <button type="button" data-d="-1" aria-label="Remove one ${a.name}">−</button>
+          <output>0</output>
+          <button type="button" data-d="1" aria-label="Add one ${a.name}">+</button>
+        </div>
+      </div>`).join("");
+  }
+  $("addons").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-d]"); if (!b) return;
+    const row = b.closest(".addon"), id = row.dataset.id;
+    const q = Math.max(0, Math.min(5, (state.addons[id] || 0) + Number(b.dataset.d)));
+    state.addons[id] = q;
+    row.querySelector("output").textContent = q;
+    row.classList.toggle("on", q > 0);
+    updateTotal();
+  });
+
+  // ---- totals ----
+  function addonsTotal() {
+    return ADDONS.reduce((s, a) => s + a.price * (state.addons[a.id] || 0), 0);
+  }
+  function kitPrice() { return state.kit === "mix" ? mixSum() : KITS[state.kit].price; }
+  function grandTotal() {
+    return Math.max(0, kitPrice() + addonsTotal() - (state.referral ? 10 : 0));
+  }
+  function updateTotal() {
+    $("total").textContent = "£" + grandTotal();
+    const extras = addonsTotal();
+    let sub = "£20 deposit now, rest on delivery";
+    if (state.kit === "mix") sub = state.mix.size ? `${state.mix.size} item${state.mix.size > 1 ? "s" : ""} · ` + sub : "Tap items above to build your box";
+    if (extras) sub += ` · includes £${extras} of add-ons`;
+    $("total-sub").innerHTML = sub + (state.referral ? ` · <em>£10 referral applied</em>` : "");
+  }
+
+  // ---- halls + map ----
+  function renderMap() {
+    const halls = form.querySelector('input[name="halls"]:checked').value;
+    document.querySelectorAll("#map .stop").forEach(s => s.classList.toggle("on", s.dataset.halls === halls));
+    $("map").classList.toggle("anywhere", halls === "Private flat");
+    $("map-cap").textContent = {
+      "Hillhead": "North of the centre, by the Don. First stop on delivery day.",
+      "Garthdee": "South of the centre, by the Dee. Last stop, mid-afternoon.",
+      "City centre halls": "Crown Place, Union Street and the harbour side halls.",
+      "Private flat": "Anywhere in the city. Put the address in the box on the left.",
+    }[halls];
+  }
+
+  // ---- check-in date ----
+  function renderDate() {
+    const v = $("arrival").value, box = $("date-info");
+    if (!v) { box.classList.remove("show"); return; }
+    const d = new Date(v + "T12:00:00"), today = new Date(); today.setHours(12, 0, 0, 0);
+    const days = Math.round((d - today) / 86400000);
+    const nice = d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    let msg;
+    if (days < 0) msg = `That date has passed. Pick the day you check in.`;
+    else if (days === 0) msg = `Today? Message us on WhatsApp first and we'll see what we can do.`;
+    else if (days < 14) msg = `${nice} is ${days} days away, so stock is already being bought. Reserve, then message us to confirm we can make it.`;
+    else msg = `Your box will be in your room on ${nice}, ${days} days from now. We'll message you the week before.` +
+      (state.kit === "mix" ? (ITEMS.winter.some(i => state.mix.has(i[1])) ? " Winter items follow in October." : "")
+       : state.kit !== "arrival" ? " The winter kit follows in October." : "");
+    box.textContent = msg; box.classList.add("show");
+  }
+
+  // ---- referral ----
+  function renderReferral() {
+    const v = $("referral").value.trim().toUpperCase(), n = $("ref-note");
+    if (!v) { n.textContent = ""; n.className = "ref-note"; state.referral = false; }
+    else if (/^LND-[A-Z0-9]{4}$/.test(v)) { n.textContent = "£10 off applied. Your friend gets £10 off their balance too."; n.className = "ref-note ok"; state.referral = true; }
+    else { n.textContent = "Codes look like LND-XXXX, the reference on a friend's confirmation."; n.className = "ref-note no"; state.referral = false; }
+    updateTotal();
+  }
+
+  form.addEventListener("change", (e) => {
+    if (e.target.name === "kit") { state.kit = e.target.value; renderContents(); renderDate(); updateTotal(); }
+    if (e.target.name === "halls") renderMap();
+    if (e.target.id === "arrival") renderDate();
+  });
+  $("referral").addEventListener("input", renderReferral);
+
+  renderContents(); renderAddons(); renderMap(); updateTotal();
+
+  // ---- submit ----
+  function check(fieldId, ok) { $(fieldId).classList.toggle("bad", !ok); return ok; }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    let valid = true;
+    valid &= check("f-date", !!data.arrival);
+    valid &= check("f-name", data.name.trim().length > 1);
+    valid &= check("f-email", /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim()));
+    valid &= check("f-phone", data.phone.replace(/\D/g, "").length >= 9);
+    if (!valid) { document.querySelector(".field.bad input").focus(); return; }
+    if (state.kit === "mix" && mixSum() < MIX_MIN) {
+      $("mix-err").classList.add("show"); $("contents").scrollIntoView({ block: "center" }); return;
+    }
+
+    const addons = ADDONS.filter(a => state.addons[a.id]).map(a => `${state.addons[a.id]} × ${a.name}`);
+    const order = {
+      ref: "LND-" + Math.random().toString(36).slice(2, 6).toUpperCase(),
+      kit: state.kit === "mix" ? `Mix and match (£${mixSum()})` : KITS[state.kit].name,
+      items: state.kit === "mix" ? [...ITEMS.arrival, ...ITEMS.winter].filter(i => state.mix.has(i[1])).map(i => i[1]) : [],
+      addons, total: "£" + grandTotal(), deposit: "£20",
+      referral: state.referral ? data.referral.trim().toUpperCase() : "",
+      storageInterest: !!data.storage, halls: data.halls, building: data.building || "",
+      arrival: data.arrival, name: data.name.trim(), email: data.email.trim(), phone: data.phone.trim(),
+      from: data.from || "", notes: data.notes || "", placedAt: new Date().toISOString(),
+    };
+
+    const btn = $("submit"); btn.disabled = true; btn.textContent = "Reserving…";
+    if (FORM_ENDPOINT) {
+      try {
+        await fetch(FORM_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(order) });
+      } catch (err) { console.error("Order could not be sent:", err); }
+    }
+    showDone(order);
+  });
+
+  function showDone(o) {
+    $("ref").textContent = o.ref;
+    const rows = [["Kit", o.kit]];
+    if (o.items.length) rows.push(["Items", o.items.join(", ")]);
+    if (o.addons.length) rows.push(["Add-ons", o.addons.join(", ")]);
+    rows.push(["Total", `${o.total} (deposit ${o.deposit})`], ["Deliver to", o.halls + (o.building ? ", " + o.building : "")],
+              ["Check-in", o.arrival], ["Name", o.name], ["Email", o.email], ["WhatsApp", o.phone]);
+    if (o.referral) rows.push(["Referral", o.referral]);
+    if (o.storageInterest) rows.push(["Summer storage", "Tell me when booking opens"]);
+    if (o.from) rows.push(["Arriving from", o.from]);
+    if (o.notes) rows.push(["Notes", o.notes]);
+    $("summary").innerHTML = rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
+
+    const body = rows.map(([k, v]) => `${k}: ${v}`).join("\n");
+    $("mailto").href = `mailto:${ORDER_EMAIL}?subject=${encodeURIComponent("Landed reservation " + o.ref)}&body=${encodeURIComponent(body)}`;
+    $("share-code").textContent = o.ref;
+    $("wa").href = "https://wa.me/?text=" + encodeURIComponent(`I've reserved an arrival kit for Aberdeen halls with Landed. Use my code ${o.ref} for £10 off: ${PAGE_URL}`);
+    $("copy").onclick = async () => {
+      try { await navigator.clipboard.writeText(o.ref); $("copy").textContent = "Copied"; }
+      catch { $("copy").textContent = o.ref; }
+      setTimeout(() => { $("copy").textContent = "Copy code"; }, 1800);
+    };
+    document.body.classList.add("submitted");
+    window.scrollTo({ top: 0 });
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+name = "landed"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "web"
+
+# Secrets (Cloudflare Pages > Settings > Environment variables, or `wrangler pages secret put`):
+#   TURSO_DATABASE_URL      libsql://landed-<org>.turso.io
+#   TURSO_AUTH_TOKEN        Turso token
+#   ADMIN_API_KEY           long random string; the admin console asks for it
+#   STRIPE_SECRET_KEY       sk_live_... (deposit + balance card payments, refunds)
+#   STRIPE_WEBHOOK_SECRET   whsec_... for POST /api/webhooks/stripe
+#   RESEND_API_KEY          re_... (or configure SMTP in Admin > Settings)
+#   RESEND_FROM             "Landed <hello@landed.scot>"
+#   ORDER_EMAIL             where new-order alerts go
+#   WHATSAPP_NUMBER         447700900000 (shown on the page and in emails)
+#   SITE_URL                https://landed.scot (used in emails; defaults to the request origin)

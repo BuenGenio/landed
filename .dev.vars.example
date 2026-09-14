@@ -1,0 +1,14 @@
+# Copy to .dev.vars for local development (npm run dev). Never commit .dev.vars.
+# Local SQLite file; the dev server runs migrations on start.
+TURSO_DATABASE_URL=file:.data/landed.db
+TURSO_AUTH_TOKEN=
+ADMIN_API_KEY=change-me
+# Leave STRIPE_* empty to run without card payments (admin can record cash/bank deposits).
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+# Leave RESEND_* empty to log emails instead of sending them (Admin > Notifications shows them).
+RESEND_API_KEY=
+RESEND_FROM=Landed <hello@landed.scot>
+ORDER_EMAIL=hello@example.com
+WHATSAPP_NUMBER=
+SITE_URL=http://localhost:8788

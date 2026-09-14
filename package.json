@@ -1,0 +1,30 @@
+{
+  "name": "landed",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Arrival kits, winter kits and summer storage for Aberdeen students - pre-order page, fulfilment backend, admin console and pitch deck",
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "web": "node scripts/dev.js",
+    "db:migrate": "node db/migrate.js",
+    "test": "node --test test/",
+    "deck": "node deck/build_deck.js",
+    "pages:dev": "wrangler pages dev web",
+    "deploy": "wrangler pages deploy web",
+    "i18n": "node scripts/i18n-check.cjs",
+    "deploy:gh-pages": "git subtree push --prefix web origin gh-pages"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.18.0",
+    "worker-mailer": "^1.2.1"
+  },
+  "devDependencies": {
+    "pptxgenjs": "^3.12.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.0.0",
+    "sharp": "^0.33.0",
+    "wrangler": "^4.70.0"
+  }
+}

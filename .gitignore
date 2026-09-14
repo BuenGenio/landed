@@ -1,0 +1,8 @@
+node_modules/
+*.pdf
+.DS_Store
+.dev.vars
+.data/
+*.db
+.wrangler/
+.~lock.*#
