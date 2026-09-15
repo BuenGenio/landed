@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en-GB" data-mode="light" data-skin="daisy">
+<head>
+<!-- @include _head.html -->
+<!-- @seo page="contact" -->
+</head>
+<body>
+<!-- @include _header.html -->
+<main class="md-main" id="main">
+  <header class="md-page-heading">
+    <span data-md="eyebrow" data-i18n="nav.contact">Contact</span>
+    <h1 data-md="h1" data-i18n="contact.h1">Talk to a person.</h1>
+    <p data-md="lead" data-i18n="contact.lead">We are a small team and we answer ourselves, usually within a few hours during the day, UK time.</p>
+  </header>
+
+  <article class="md-prose">
+    <div class="md-prose-cards md-contact grid gap-4 sm:grid-cols-2">
+      <div data-md="card">
+        <b data-md="card-title" data-i18n="contact.whatsapp.h">WhatsApp</b>
+        <p data-md="card-text" data-i18n="contact.whatsapp.p">Quickest for anything about a delivery day, a room change or a late landing.</p>
+        <a data-md="btn primary" id="contact-wa" href="#" target="_blank" rel="noopener" data-i18n="contact.whatsapp.btn">Message us on WhatsApp</a>
+      </div>
+      <div data-md="card">
+        <b data-md="card-title" data-i18n="contact.email.h">Email</b>
+        <p data-md="card-text" data-i18n="contact.email.p">For anything longer, invoices, or if you would rather not use WhatsApp.</p>
+        <a data-md="btn" id="contact-mail" href="mailto:hello@landed.school">hello@landed.school</a>
+      </div>
+    </div>
+
+    <section class="md-prose-section md-narrow">
+      <h2 data-md="h2" data-i18n="contact.order.h2">About an order</h2>
+      <p data-i18n="contact.order.p">Have your reference ready; it looks like LND-XXXX and is in your confirmation email. It lets us find your box, move a delivery, or swap an item before the stock is packed.</p>
+    </section>
+
+    <section class="md-prose-section md-narrow">
+      <h2 data-md="h2" data-i18n="contact.hours.h2">When we answer</h2>
+      <p data-i18n="contact.hours.p">Monday to Saturday, 9am to 8pm UK time. In arrivals week (the first two weeks of September) we are out delivering, so WhatsApp is the way to reach us.</p>
+    </section>
+
+    <section class="md-prose-section md-narrow">
+      <h2 data-md="h2" data-i18n="contact.where.h2">Where we are</h2>
+      <p data-i18n="contact.where.p">Aberdeen, Scotland. We deliver to Hillhead, Garthdee, the city centre halls and private flats across the city; there is no shop to visit, everything comes to your door.</p>
+    </section>
+
+    <section class="md-prose-section md-narrow">
+      <h2 data-md="h2" data-i18n="contact.parents.h2">Parents and guardians</h2>
+      <p data-i18n="contact.parents.p">You can reserve on behalf of a student: put their name and check-in date on the order and your own email and phone for the deposit and updates. We will not share anything with the halls beyond the delivery itself.</p>
+    </section>
+  </article>
+</main>
+<!-- @include _footer.html -->
+<!-- @include _scripts.html -->
+<script>
+  MD.boot().then(async () => {
+    try {
+      const s = await (await fetch("/api/site")).json();
+      if (s.whatsapp) document.getElementById("contact-wa").href = "https://wa.me/" + String(s.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(MD.t("contact.whatsapp.msg") || "");
+      else document.getElementById("contact-wa").href = "mailto:" + (s.email || "hello@landed.school");
+      if (s.email) { const m = document.getElementById("contact-mail"); m.href = "mailto:" + s.email; m.textContent = s.email; }
+    } catch (e) {}
+  });
+</script>
+</body>
+</html>

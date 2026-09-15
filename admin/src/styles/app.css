@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+/*
+ * Tokens: duties-api's admin palette (ground / surface / ink / rule / ok / warn / bad / info) with
+ * Landed's brand from web/meta/meta.css: amber on granite, Bricolage Grotesque. Dark mode is `.dark` on <html>.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Bricolage Grotesque", "Helvetica Neue", Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-brand: #F0A030;
+  --color-brand-deep: #D98A12;
+  --color-brand-ink: #7A4E06;
+  --color-brand-wash: #FCEFD9;
+
+  --color-ground: #F3F5F7;
+  --color-surface: #FFFFFF;
+  --color-ink: #1B2430;
+  --color-ink-2: #5F6D79;
+  --color-ink-3: #8A97A3;
+  --color-rule: #D8DFE5;
+  --color-rule-soft: #EEF1F4;
+
+  --color-ok: #1F7A4D;
+  --color-ok-wash: #DDF1E6;
+  --color-warn: #9A6B12;
+  --color-warn-wash: #FCEFD9;
+  --color-bad: #B3261E;
+  --color-bad-wash: #F8D7D5;
+  --color-info: #2B5FA8;
+  --color-info-wash: #E3ECF8;
+
+  --radius-card: 14px;
+}
+
+:root { color-scheme: light; }
+
+.dark {
+  color-scheme: dark;
+  --color-brand-ink: #F5C36A;
+  --color-brand-wash: #3A2A0E;
+  --color-ground: #12171C;
+  --color-surface: #1B2430;
+  --color-ink: #E6EBEF;
+  --color-ink-2: #AEB8C1;
+  --color-ink-3: #7F8B95;
+  --color-rule: #2E3740;
+  --color-rule-soft: #242C34;
+  --color-ok: #7BE0A9;
+  --color-ok-wash: #17402B;
+  --color-warn: #E0B25A;
+  --color-warn-wash: #33291A;
+  --color-bad: #F5A29B;
+  --color-bad-wash: #4A1B18;
+  --color-info: #8FB3E6;
+  --color-info-wash: #1B2A40;
+}
+
+@layer base {
+  html { font-family: var(--font-sans); background: var(--color-ground); color: var(--color-ink); -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: var(--color-ground); }
+  :focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  input[type="date"] { color-scheme: inherit; }
+}
+
+@layer components {
+  .tnum { font-variant-numeric: tabular-nums; }
+  .th { @apply px-3 py-2 text-left font-mono text-[11px] uppercase tracking-wider text-ink-3; }
+  .td { @apply px-3 py-2 align-top; }
+  .row-link { @apply cursor-pointer hover:bg-ground; }
+  .input { @apply h-9 rounded-lg border border-rule bg-surface px-3 text-sm text-ink placeholder:text-ink-3 disabled:bg-ground; }
+  .kicker { @apply font-mono text-[11px] uppercase tracking-wider text-ink-3; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+}

@@ -12,16 +12,186 @@
      style    CSS for what the framework has no utility for
      icons    the icon style the skin declares by default
 
-   The native skin is the page's own design; the other three are the
-   top CSS frameworks so the same page can be shown in any of them.
+   The daisy skin is the page's own design: daisyUI 5 on Tailwind v4, compiled
+   by `npm run css` from src/daisy.css into meta/daisy.css. Its theme variants
+   ("daisy:retro" and so on) reuse the same map with another daisyUI theme.
+   The three framework skins show the same page in Tailwind, Bootstrap and
+   Bulma; "native" is the older hand-written CSS, kept for reference.
    ===================================================================== */
 (function (MD) {
   const SKINS = {};
+  const FONT = "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&display=swap";
+  // the daisyUI stylesheet is linked in the page head (versioned by the build); reuse that exact href
+  const daisyCss = () => (document.getElementById("md-daisy-css") || {}).getAttribute?.("href") || new URL("daisy.css", document.currentScript.src).href;
+
+  // ----------------------------------------------------------------- daisy
+  // vocabulary → daisyUI classes. Keys: "component", "component.variant", "component.state".
+  // Class names must stay literal here: Tailwind scans this file (@source in src/daisy.css) and only
+  // emits what it finds. Hidden-until-state components map to "hidden" and their "…show" key to the
+  // visible component; DAISY_STYLE below covers pseudo-elements, descendants and the submitted page.
+  const DAISY_MAP = {
+    // type
+    wordmark: "text-2xl font-extrabold tracking-tight",
+    place: "text-sm opacity-70",
+    h1: "text-4xl md:text-6xl font-extrabold tracking-tight leading-none mb-4 text-balance",
+    lead: "text-lg leading-relaxed mb-3 max-w-prose",
+    terms: "text-sm opacity-70 m-0",
+    cap: "text-sm opacity-70 mt-2 mx-1 min-h-[1.5em]",
+    h2: "text-2xl md:text-3xl font-bold tracking-tight mt-0 mb-4 text-balance",
+    h3: "text-base font-bold mt-5 mb-2",
+    eyebrow: "",
+    nav: "",
+    link: "link font-semibold",
+    footer: "text-sm opacity-70 py-8",
+    // kits
+    kit: "card card-border border-base-300 bg-base-100 grid grid-cols-[56px_1fr_auto] gap-4 items-center p-4 relative cursor-pointer select-none",
+    "kit.on": "card card-border border-primary bg-base-100 grid grid-cols-[56px_1fr_auto] gap-4 items-center p-4 relative cursor-pointer select-none",
+    "kit-name": "font-bold text-lg leading-tight",
+    "kit-line": "text-sm opacity-70 mt-0.5",
+    save: "text-success font-semibold opacity-100",
+    "kit-price": "font-extrabold text-xl whitespace-nowrap",
+    compare: "card bg-base-200 p-4 mt-5",
+    "bar-row": "grid grid-cols-[10ch_1fr_auto] items-center gap-2.5 text-sm my-1.5",
+    bar: "progress h-3.5 rounded-full bg-base-300 block",
+    "bar-fill": "block h-full rounded-full bg-neutral w-0 transition-[width] duration-500 ease-out",
+    "bar-fill.us": "block h-full rounded-full bg-primary w-0 transition-[width] duration-500 ease-out",
+    foot: "text-xs opacity-70 mt-2 m-0",
+    // what's in the box
+    item: "rounded-box bg-base-200 border-2 border-transparent p-2 pt-2.5 text-center text-xs leading-tight",
+    "item.winter": "rounded-box bg-[color-mix(in_oklab,var(--color-warning)_18%,var(--color-base-100))] border-2 border-transparent p-2 pt-2.5 text-center text-xs leading-tight",
+    "item.on": "rounded-box bg-base-100 border-2 border-primary p-2 pt-2.5 text-center text-xs leading-tight",
+    "item.winter.on": "rounded-box bg-base-100 border-2 border-primary p-2 pt-2.5 text-center text-xs leading-tight",
+    "item-price": "block text-[11px] opacity-70 mt-1",
+    nudge: "hidden",
+    "nudge.show": "alert alert-warning alert-soft mt-3 text-sm",
+    "err-msg": "hidden",
+    "err-msg.show": "block text-error text-sm font-medium mt-2",
+    // add-ons
+    addon: "card card-border border-base-300 bg-base-100 grid grid-cols-[34px_1fr_auto] gap-3 items-center px-3 py-2.5",
+    "addon.on": "card card-border border-primary bg-base-100 grid grid-cols-[34px_1fr_auto] gap-3 items-center px-3 py-2.5",
+    "addon-name": "font-semibold leading-tight",
+    "addon-price": "text-sm opacity-70",
+    stepper: "join",
+    "stepper-btn": "btn btn-sm btn-square join-item text-lg font-bold",
+    "stepper-out": "join-item inline-flex items-center justify-center min-w-9 px-2 text-sm font-bold bg-base-100 border-base-300",
+    storage: "card card-border border-base-300 bg-base-200 flex-row items-start gap-3 p-4 mt-3",
+    checkbox: "checkbox checkbox-primary rounded-md shrink-0 mt-0.5",
+    "storage-name": "font-bold",
+    "storage-line": "text-sm opacity-70 mt-0.5",
+    // delivery + about you
+    chips: "flex flex-wrap gap-2 mb-4",
+    chip: "btn btn-sm rounded-full relative font-semibold",
+    "chip.on": "btn btn-sm rounded-full btn-neutral relative font-semibold",
+    field: "mb-4",
+    label: "block font-semibold text-sm mb-1.5",
+    input: "input input-lg w-full text-base",
+    error: "hidden text-error text-sm mt-1.5",
+    note: "text-sm mt-1.5 min-h-[1.5em]",
+    info: "hidden",
+    "info.show": "alert alert-warning alert-soft mt-2 py-2.5 text-sm",
+    // how it works + faq
+    step: "card bg-base-200 p-5",
+    "step-title": "block font-bold text-base mt-2 mb-1",
+    "step-text": "m-0 text-sm opacity-80 leading-relaxed",
+    "faq-item": "collapse collapse-plus bg-base-200 border border-base-300 mb-2",
+    "faq-q": "collapse-title font-semibold text-base",
+    "faq-a": "m-0 text-sm sm:text-base opacity-80 leading-relaxed",
+    // sticky total bar
+    sticky: "fixed inset-x-0 bottom-0 z-40 bg-base-100/90 backdrop-blur border-t border-base-300 px-5 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]",
+    total: "leading-tight",
+    "total-sub": "text-sm opacity-70",
+    btn: "btn btn-sm rounded-full",
+    "btn.primary": "btn btn-primary btn-lg rounded-full whitespace-nowrap",
+    // confirmation
+    done: "hidden",
+    "ref-badge": "kbd kbd-lg font-extrabold text-2xl px-5 py-3 my-2 mb-5",
+    summary: "grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1.5 mb-5",
+    share: "card card-border border-base-300 bg-base-200 p-5 my-5",
+    pay: "card card-border border-base-300 bg-base-200 p-5 my-5",
+    code: "kbd kbd-md font-extrabold text-base",
+    // shared blocks used by the other pages
+    cta: "card card-border border-base-300 bg-base-200 flex-row flex-wrap items-center justify-between gap-4 p-6 my-8",
+    "cta-title": "block text-lg font-bold mb-1",
+    "cta-text": "m-0 text-sm opacity-75",
+    card: "card card-border border-base-300 bg-base-100 p-5",
+    "card-title": "block font-bold text-base mb-1",
+    "card-text": "m-0 text-sm opacity-75",
+  };
+  const DAISY_STYLE = `
+    /* what daisyUI has no utility for; tokens follow the theme via the bridge in src/daisy.css */
+    body { font-family: var(--font); font-size: 17px; line-height: 1.5; }
+    [data-md~="h1"] { font-variation-settings: "opsz" 96; }
+    [data-md~="cap"].center { text-align: center; }
+    [data-md~="label"] small { font-weight: 400; opacity: .65; }
+    /* kits and chips are labels wrapping a radio: the input covers the card so the whole thing is the control */
+    [data-md~="kit"] input, [data-md~="chip"] input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
+    [data-md~="kit"]:has(input:focus-visible), [data-md~="chip"]:has(input:focus-visible) { outline: 2px solid var(--color-base-content); outline-offset: 2px; }
+    [data-md~="kit"] md-icon { width: 56px; height: 56px; }
+    [data-md~="bar-row"] b { font-weight: 700; white-space: nowrap; }
+    [data-md~="item"] md-icon { display: block; margin: 0 auto 6px; }
+    button[data-md~="item"] { cursor: pointer; width: 100%; color: inherit; font: inherit; font-size: .75rem; line-height: 1.25; }
+    button[data-md~="item"]:focus-visible { outline: 2px solid var(--color-base-content); outline-offset: 2px; }
+    [data-state~="on"] > [data-md~="item-price"] { opacity: 1; font-weight: 700; }
+    [data-md~="nudge"] > button { justify-self: end; white-space: nowrap; }
+    @media (min-width: 640px) { [data-md~="nudge"][data-state~="show"] { grid-template-columns: 1fr auto; } }
+    [data-md~="storage"] label { cursor: pointer; }
+    [data-md~="stepper-out"] { line-height: 1; }
+    textarea[data-md~="input"] { height: auto; min-height: 6rem; padding-block: .75rem; line-height: 1.5; resize: vertical; }
+    [data-md~="field"][data-state~="bad"] [data-md~="input"] { border-color: var(--color-error); outline-color: var(--color-error); }
+    [data-md~="field"][data-state~="bad"] [data-md~="error"] { display: block; }
+    [data-md~="note"].ok { color: var(--color-success); font-weight: 600; }
+    [data-md~="note"].no { opacity: .7; }
+    [data-md~="note"].warn { color: var(--color-error); font-weight: 600; }
+    [data-md~="step"] md-icon { display: block; }
+    [data-md~="faq-q"]::-webkit-details-marker { display: none; }
+    [data-md~="faq-q"] { list-style: none; }
+    .collapse-content > [data-md~="faq-a"] { padding-top: .25rem; }
+    /* the sticky bar */
+    [data-md~="sticky"] .inner { max-width: var(--maxw); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    [data-md~="total"] b { display: block; font-size: 1.5rem; font-weight: 800; letter-spacing: -.01em; }
+    [data-md~="total-sub"] em { color: var(--color-success); font-style: normal; font-weight: 600; }
+    [data-md~="sticky"] [data-md~="err-msg"] { max-width: var(--maxw); margin-inline: auto; }
+    [data-md~="btn"][disabled] { opacity: .6; cursor: default; }
+    /* a button whose "primary" came as a class rather than a variant (btn.primary is the mapped form) */
+    [data-md~="btn"].primary:not(.btn-primary) { --btn-color: var(--color-primary); --btn-fg: var(--color-primary-content); --size: calc(var(--size-field, .25rem) * 12); --btn-p: 1.25rem; --fontsize: 1.125rem; }
+    [data-md~="btn"].primary { white-space: nowrap; }
+    /* confirmation */
+    [data-md~="done"] [data-md~="h2"] { font-size: 2rem; letter-spacing: -.02em; }
+    [data-md~="summary"] dt { opacity: .7; }
+    [data-md~="summary"] dd { margin: 0; overflow-wrap: anywhere; }
+    [data-md~="share"] b, [data-md~="pay"] b { display: block; margin-bottom: 6px; font-size: 1.05rem; }
+    [data-md~="share"] .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+    [data-md~="share"] span, [data-md~="pay"] p { font-size: .95rem; opacity: .85; }
+    [data-md~="pay"] p { margin: 0 0 12px; }
+    .md-chat, .md-share { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .875rem; line-height: 1; color: var(--color-base-content); background: var(--color-base-100); border: var(--border) solid var(--color-base-300); border-radius: 999px; padding: .55rem 1rem; text-decoration: none; }
+    .md-chat:hover, .md-share:hover { background: var(--color-base-200); }
+    .md-chat svg, .md-share svg { width: 18px; height: 18px; }
+    html.submitted form, html.submitted [data-md~="sticky"], html.submitted .md-hero, html.submitted .after-form { display: none; }
+    html.submitted [data-md~="done"] { display: block; max-width: 680px; margin: 2.5rem 0 1.5rem; padding: clamp(1.25rem, 4vw, 2.5rem); background: var(--color-base-100); border: var(--border) solid var(--color-base-300); border-radius: var(--radius-box); }
+    [data-md~="done"] > p:last-child { margin-bottom: 0; }
+    html.submitted .md-main { padding-bottom: 20px; }
+    /* icon declarations for this skin */
+    :root { --icon-style: line; }
+  `;
+  const daisyTheme = (id, label, theme) => ({
+    id, label,
+    assets: { css: [FONT, daisyCss()], js: [] },
+    // light/dark come from the mode switcher for the Landed theme; a named daisyUI theme is fixed
+    mode: m => document.documentElement.setAttribute("data-theme", theme || (m === "dark" ? "landed-dark" : "landed")),
+    icons: "line",
+    map: DAISY_MAP,
+    style: DAISY_STYLE,
+  });
+  SKINS.daisy = daisyTheme("daisy", "Landed");
+  SKINS["daisy:cupcake"] = daisyTheme("daisy:cupcake", "Cupcake", "cupcake");
+  SKINS["daisy:retro"] = daisyTheme("daisy:retro", "Retro", "retro");
+  SKINS["daisy:nord"] = daisyTheme("daisy:nord", "Nord", "nord");
+  SKINS["daisy:dracula"] = daisyTheme("daisy:dracula", "Dracula", "dracula");
 
   // ---------------------------------------------------------------- native
   SKINS.native = {
     id: "native", label: "Landed",
-    assets: { css: ["https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&display=swap"], js: [] },
+    assets: { css: [FONT], js: [] },
     mode: () => {},
     icons: "line",
     map: {},
@@ -96,6 +266,7 @@
       [data-md~="note"] { font-size: 15px; margin-top: 6px; min-height: 1.5em; }
       [data-md~="note"].ok { color: var(--ok); font-weight: 600; }
       [data-md~="note"].no { color: var(--muted); }
+      [data-md~="note"].warn { color: var(--err); font-weight: 600; }
       [data-md~="info"] { margin-top: 8px; padding: 10px 14px; background: var(--amber-tint); border-radius: 10px; font-size: 15px; display: none; }
       [data-md~="info"][data-state~="show"] { display: block; }
       [data-md~="step"] { background: var(--fog); border-radius: var(--radius); padding: 16px; }
@@ -153,7 +324,9 @@
     assets: {
       css: [],
       js: ["https://cdn.tailwindcss.com"],
-      afterJs: () => { if (window.tailwind) window.tailwind.config = { darkMode: ["selector", '[data-mode="dark"]'], corePlugins: { preflight: true } }; },
+      // safelist every class the map uses: the CDN's DOM scan sometimes misses arbitrary values (grid-cols-[…])
+      // on elements rendered after the first scan, which broke the add-on rows
+      afterJs: () => { if (window.tailwind) window.tailwind.config = { darkMode: ["selector", '[data-mode="dark"]'], corePlugins: { preflight: true }, safelist: [...new Set(Object.values(SKINS.tailwind.map).flatMap(v => String(v).split(/\s+/)).filter(Boolean))] }; },
     },
     mode: () => {},
     icons: "flat",
@@ -224,6 +397,10 @@
       share: "rounded-2xl bg-amber-100 dark:bg-amber-950 p-4 my-4 text-slate-900 dark:text-amber-50 [&>b]:block [&>b]:mb-1 [&>.row]:flex [&>.row]:flex-wrap [&>.row]:gap-2 [&>.row]:items-center [&>.row]:mt-2",
       pay: "rounded-2xl bg-slate-100 dark:bg-slate-800 p-4 my-4 [&>b]:block [&>b]:mb-2 text-slate-900 dark:text-white",
       code: "font-extrabold text-lg bg-white dark:bg-slate-900 rounded-lg px-2.5 py-1.5",
+      eyebrow: "", nav: "",
+      cta: "flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-amber-100 dark:bg-amber-950 p-6 my-8 text-slate-900 dark:text-amber-50",
+      "cta-title": "block text-lg font-bold mb-1", "cta-text": "m-0 text-sm text-slate-600 dark:text-slate-300",
+      card: "rounded-2xl bg-slate-100 dark:bg-slate-800 p-5", "card-title": "block font-bold mb-1 text-slate-900 dark:text-white", "card-text": "m-0 text-sm text-slate-600 dark:text-slate-300",
     },
     style: `
       body { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 16px; line-height: 1.5; background: #fff; color: #0f172a; }
@@ -270,6 +447,9 @@
       btn: "btn btn-light rounded-pill fw-semibold", "btn.primary": "btn btn-primary btn-lg rounded-pill fw-bold text-nowrap",
       done: "py-5 d-none", "ref-badge": "badge text-bg-light fs-4 my-2 mb-4", summary: "row row-cols-1 mb-3", link: "link-primary fw-semibold",
       share: "alert alert-warning my-3", pay: "card card-body bg-body-tertiary border-0 my-3", code: "fw-bolder fs-5 bg-body px-2 py-1 rounded",
+      eyebrow: "", nav: "",
+      cta: "alert alert-warning d-flex flex-wrap align-items-center justify-content-between gap-3 my-4", "cta-title": "fw-bold fs-5 d-block mb-1", "cta-text": "mb-0 small",
+      card: "card card-body bg-body-tertiary border-0", "card-title": "fw-bold d-block mb-1", "card-text": "small mb-0",
     },
     style: `
       [data-md~="kit"] input, [data-md~="chip"] input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
@@ -322,7 +502,7 @@
       kit: "box p-4 is-clickable", "kit.on": "box p-4 is-clickable has-background-primary-light on",
       "kit-name": "has-text-weight-bold is-size-5", "kit-line": "has-text-grey is-size-6", save: "has-text-success has-text-weight-semibold", "kit-price": "has-text-weight-bold is-size-4",
       compare: "box has-background-light mt-4", "bar-row": "is-size-6", bar: "bar", "bar-fill": "bar-fill", foot: "has-text-grey is-size-7 mt-2",
-      item: "box p-2 has-background-light has-text-centered is-size-7 is-shadowless", "item.on": "box p-2 has-text-centered is-size-7 on", "item-price": "is-block has-text-grey",
+      item: "box p-2 has-text-centered is-size-7", "item.on": "box p-2 has-text-centered is-size-7 on", "item-price": "is-block has-text-grey",
       nudge: "notification is-warning is-light mt-3 p-3 is-hidden", "nudge.show": "notification is-warning is-light mt-3 p-3 is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap",
       "err-msg": "help is-danger is-size-6 is-hidden", "err-msg.show": "help is-danger is-size-6",
       addon: "box p-3 is-shadowless", "addon.on": "box p-3 is-shadowless on",
@@ -339,6 +519,9 @@
       btn: "button is-light is-rounded has-text-weight-semibold", "btn.primary": "button is-primary is-medium is-rounded has-text-weight-bold",
       done: "py-6 is-hidden", "ref-badge": "tag is-large is-light has-text-weight-bold my-2 mb-4", summary: "summary", link: "has-text-weight-semibold",
       share: "notification is-warning is-light my-4", pay: "box has-background-light is-shadowless my-4", code: "tag is-medium has-text-weight-bold",
+      eyebrow: "", nav: "",
+      cta: "notification is-warning is-light my-5 is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-space-between", "cta-title": "has-text-weight-bold is-size-5 is-block mb-1", "cta-text": "is-size-6 mb-0",
+      card: "box has-background-light is-shadowless", "card-title": "has-text-weight-bold is-block mb-1", "card-text": "is-size-6 mb-0",
     },
     style: `
       [data-md~="kit"] { position: relative; display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; border: 2px solid var(--bulma-border); }

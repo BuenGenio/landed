@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS deliveries (
   status         TEXT NOT NULL DEFAULT 'planned',  -- planned | packed | delivered | reception | failed | cancelled
   note           TEXT,                          -- "left with reception, name on box" etc.
   delivered_at   TEXT,
+  reminder_sent_at TEXT,
   created_at     TEXT DEFAULT (datetime('now')),
   updated_at     TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (order_ref) REFERENCES orders(ref) ON DELETE CASCADE

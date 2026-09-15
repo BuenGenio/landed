@@ -8,7 +8,7 @@ integrations and its language from *declarations* instead of code. It powers
 meta/
   meta.css      tokens (light + dark) and structure every skin shares
   meta.js       runtime: mode, i18n, skins, states, switcher, boot
-  icons.js      one geometry per icon, five renderers (line, flat, 3d, 3d-dpd, emoji)
+  icons.js      one geometry per icon, five renderers (line, flat, 3d, 3d-dpd, emoji) plus two image themes (photo = photorealistic, skeuomorphic)
   graphics.js   token-driven illustrations (<md-graphic name="room">)
   packages.js   integrations from declarations (<md-package name="PaymentGateway" provider="monobank">)
   skins.js      native, tailwind, bootstrap, bulma
@@ -37,10 +37,12 @@ CSS custom property (`--icon-<name>`), then the skin's default (`--icon-style`).
 
 - **Mode**: `MD.mode.set("light" | "dark" | "auto")`. Writes `html[data-mode]`,
   `color-scheme` and `<meta name="theme-color">`. Auto follows `prefers-color-scheme`.
-- **Skin**: `MD.skin.set("bootstrap")`. Loads the framework from its CDN, injects the
-  skin's style block, maps every `data-md` component to framework classes, and tells the
-  framework which colour mode is on (`data-bs-theme`, Bulma's `data-theme`, Tailwind's
-  `darkMode: selector`). Switching skins reloads the page because framework resets are
+- **Skin**: `MD.skin.set("bootstrap")`. Loads the framework's stylesheet (daisyUI's from
+  `meta/daisy.css`, the others from a CDN), injects the skin's style block, maps every
+  `data-md` component to framework classes, and tells the framework which colour mode is on
+  (daisyUI's `data-theme` = `landed` / `landed-dark`, `data-bs-theme`, Bulma's `data-theme`,
+  Tailwind's `darkMode: selector`). `daisy:<theme>` skins reuse the daisy map with a stock
+  daisyUI theme. Switching skins reloads the page because framework resets are
   global; the page saves the visitor's form on `md:before-reload` and restores it.
 - **Language**: `MD.i18n.set("zh-HK")`. Lazy-loads `i18n/<code>.js`, sets `lang`/`dir`,
   applies every `data-i18n`, repaints graphics, fires `md:lang` so the page re-renders

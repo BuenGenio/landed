@@ -1,0 +1,23 @@
+{
+  "_comment": "source file (without .png) → catalogue icon id used by web/catalogue.js and web/meta/icons.js",
+  "bag-of-rowies": "rowie",
+  "bath-and-hand-towel": "towel",
+  "beanie": "beanie",
+  "blackout-eye-mask": "mask",
+  "chopping-board-and-knife": "board",
+  "cutlery-for-two": "cutlery",
+  "duvet-and-cover": "duvet",
+  "fitted-sheet-and-protector": "sheet",
+  "frying-pan-and-saucepan": "pan",
+  "hot-water-bottle": "bottle",
+  "kettle": "kettle",
+  "laundry-bag-and-tea-towels": "bag",
+  "local-tea": "tea",
+  "thermal-base-layer": "thermal",
+  "thick-wool-mix-socks": "socks",
+  "two-mugs": "mug",
+  "two-pillows-and-cases": "pillow",
+  "two-plates-two-bowls": ["plate", "crockery"],
+  "uk-adaptor-and-extension-lead": "plug",
+  "vitamin-d-three-months": "vitamin"
+}

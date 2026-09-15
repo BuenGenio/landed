@@ -3,10 +3,20 @@ compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "web"
 
+# The database: Cloudflare D1 (SQLite). Create it once and paste the id:
+#   npx wrangler d1 create landed        →  database_id = "…"
+#   npm run db:migrate:remote            →  applies db/migrations/*.sql to it
+# Locally `npm run dev` uses a SQLite file instead (DATABASE_URL in .dev.vars) and `npm run pages:dev`
+# uses wrangler's local D1 copy (npm run db:migrate:local first).
+[[d1_databases]]
+binding = "DB"
+database_name = "landed"
+database_id = "e5d35765-39ed-428d-838b-b80ba782254c"
+migrations_dir = "db/migrations"
+migrations_table = "_wrangler_migrations"
+
 # Secrets (Cloudflare Pages > Settings > Environment variables, or `wrangler pages secret put`):
-#   TURSO_DATABASE_URL      libsql://landed-<org>.turso.io
-#   TURSO_AUTH_TOKEN        Turso token
-#   ADMIN_API_KEY           long random string; the admin console asks for it
+#   ADMIN_API_KEY           optional: long random string for scripts (npm run seed) and to guard the first-user setup
 #   STRIPE_SECRET_KEY       sk_live_... (deposit + balance card payments, refunds)
 #   STRIPE_WEBHOOK_SECRET   whsec_... for POST /api/webhooks/stripe
 #   RESEND_API_KEY          re_... (or configure SMTP in Admin > Settings)

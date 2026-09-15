@@ -1,0 +1,49 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="meta/meta.css">
+<link rel="stylesheet" href="meta/daisy.css" id="md-daisy-css">
+<script>
+  // Apply saved mode and skin before first paint so nothing flashes.
+  (function () { try {
+    var q = new URLSearchParams(location.search), h = document.documentElement;
+    var m = q.get("mode") || localStorage.getItem("md.mode") || "auto";
+    h.dataset.mode = m === "auto" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : m;
+    h.dataset.skin = q.get("skin") || localStorage.getItem("md.skin") || "daisy";
+    // the daisyUI build is the default skin; keep its stylesheet unless a framework skin is chosen
+    if (!/^daisy/.test(h.dataset.skin)) { var l = document.getElementById("md-daisy-css"); if (l) l.remove(); }
+    else h.dataset.theme = h.dataset.skin.indexOf(":") > 0 ? h.dataset.skin.split(":")[1] : (h.dataset.mode === "dark" ? "landed-dark" : "landed");
+  } catch (e) {} })();
+</script>
+<noscript><style>html:not([data-md-ready]) body { opacity: 1; }</style></noscript>
+<style>
+  /* Hero slideshow: layout lives in meta.css (.md-slides*); these are the slide frames and the chip row. */
+  .md-slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity .9s ease; }
+  .md-slide.is-on { opacity: 1; z-index: 1; }
+  .md-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .md-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.14); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: 5px 11px 5px 7px; font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; flex: 0 0 auto; }
+  .md-chip md-icon { width: 18px; height: 18px; --icon-stroke: #fff; --icon-fill: var(--amber); --icon-fill-2: transparent; }
+  .md-slides-nav > button { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); color: #fff; width: 34px; height: 34px; border-radius: 999px; font-size: 22px; line-height: 1; cursor: pointer; }
+  .md-slides-nav > button:hover { background: rgba(255,255,255,.28); }
+  .md-slides-dots { display: flex; gap: 5px; }
+  .md-slides-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 999px; background: rgba(255,255,255,.4); font-size: 0; }
+  .md-slides-dots button[aria-selected="true"] { background: var(--amber); width: 18px; }
+  @media (max-width: 56rem) { .md-slides-dots { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .md-slide { transition: none; } }
+  /* Prose pages (about, contact, terms, privacy): reading column and rhythm only; type and colour come from the skin. */
+  .md-narrow { max-width: 46rem; }
+  .md-page-heading [data-md~="lead"], .md-page-heading [data-md~="terms"] { max-width: 46rem; margin: 0; }
+  .md-page-heading [data-md~="lead"] { font-size: clamp(1.05rem, 1.5vw, 1.25rem); line-height: 1.5; }
+  .md-prose-section { padding: clamp(1.75rem, 3.5vw, 3rem) 0 0; }
+  .md-legal .md-prose-section { padding-top: clamp(1.25rem, 2.5vw, 2rem); }
+  .md-prose-section > [data-md~="h2"] { margin: 0 0 .85rem; }
+  .md-prose-section > p, .md-prose-section > ul, .md-prose-section > ol { margin: 0 0 1.1rem; line-height: 1.6; }
+  .md-prose-section > ul, .md-prose-section > ol { list-style: revert; padding-inline-start: 1.4rem; }
+  .md-prose-cards { margin-top: 1.25rem; }
+  .md-prose-cards [data-md~="card"] > * { margin: 0; }
+  .md-prose-cards [data-md~="card-title"] { display: block; margin-bottom: .35rem; }
+  .md-prose-cards .md-card-icon { display: block; margin-bottom: .75rem; }
+  .md-contact [data-md~="card-text"] { margin-bottom: 1rem; }
+  .md-contact [data-md~="btn"] { margin-top: auto; align-self: flex-start; text-decoration: none; }
+  .md-prose-cta { margin-top: clamp(2.5rem, 5vw, 4rem); }
+  .md-prose-cta p { margin: 0; }
+</style>

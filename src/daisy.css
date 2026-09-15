@@ -1,0 +1,108 @@
+/* =====================================================================
+   daisyUI build for Landed
+   ---------------------------------------------------------------------
+   Compiled to web/meta/daisy.css by `npm run css` (Tailwind v4 CLI + daisyUI 5).
+   The page vocabulary (data-md="…") is mapped to these classes by the
+   `daisy` skin in web/meta/skins.js, so Tailwind scans that file and the
+   page templates for class names.
+   ===================================================================== */
+@import "tailwindcss" source(none);
+@source "../site";
+@source "../web/meta/skins.js";
+@source "../web/meta/meta.js";
+@source "../web/meta/packages.js";
+
+@plugin "daisyui" {
+  themes: landed --default, landed-dark --prefersdark, cupcake, retro, nord, dracula;
+  logs: false;
+}
+
+/* Landed, light: the brand tokens from meta.css expressed as a daisyUI theme */
+@plugin "daisyui/theme" {
+  name: "landed";
+  default: true;
+  color-scheme: light;
+  --color-base-100: #FFFFFF;
+  --color-base-200: #EEF1F4;
+  --color-base-300: #D8DFE5;
+  --color-base-content: #1B2430;
+  --color-primary: #F0A030;
+  --color-primary-content: #1B2430;
+  --color-secondary: #2A3540;
+  --color-secondary-content: #FFFFFF;
+  --color-accent: #1F7A4D;
+  --color-accent-content: #FFFFFF;
+  --color-neutral: #1B2430;
+  --color-neutral-content: #FFFFFF;
+  --color-info: #2A6FB0;
+  --color-info-content: #FFFFFF;
+  --color-success: #1F7A4D;
+  --color-success-content: #FFFFFF;
+  --color-warning: #F0A030;
+  --color-warning-content: #1B2430;
+  --color-error: #B3261E;
+  --color-error-content: #FFFFFF;
+  --radius-selector: 2rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1.5px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Landed, dark */
+@plugin "daisyui/theme" {
+  name: "landed-dark";
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #0F151C;
+  --color-base-200: #161E27;
+  --color-base-300: #2E3A47;
+  --color-base-content: #EEF1F4;
+  --color-primary: #F0A030;
+  --color-primary-content: #1B2430;
+  --color-secondary: #C9D3DC;
+  --color-secondary-content: #0F151C;
+  --color-accent: #4CC38A;
+  --color-accent-content: #0F151C;
+  --color-neutral: #EEF1F4;
+  --color-neutral-content: #0F151C;
+  --color-info: #6FA8E6;
+  --color-info-content: #0F151C;
+  --color-success: #4CC38A;
+  --color-success-content: #0F151C;
+  --color-warning: #F0A030;
+  --color-warning-content: #1B2430;
+  --color-error: #F28B82;
+  --color-error-content: #0F151C;
+  --radius-selector: 2rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1.5px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Bridge: the meta-design tokens follow whichever daisyUI theme is active, so the
+   token-drawn graphics, icons, hero and wallpaper recolour with the theme. */
+html[data-theme] {
+  --bg: var(--color-base-100);
+  --surface: var(--color-base-100);
+  --ink: var(--color-base-content);
+  --granite: color-mix(in oklab, var(--color-base-content) 88%, var(--color-base-100));
+  --fog: var(--color-base-200);
+  --fog-deep: var(--color-base-300);
+  --muted: color-mix(in oklab, var(--color-base-content) 64%, var(--color-base-100));
+  --amber: var(--color-primary);
+  --amber-deep: color-mix(in oklab, var(--color-primary) 85%, black);
+  --amber-tint: color-mix(in oklab, var(--color-primary) 16%, var(--color-base-100));
+  --ok: var(--color-success);
+  --err: var(--color-error);
+  --icon-stroke: var(--granite);
+  --icon-fill: var(--color-primary);
+  --icon-fill-2: var(--amber-tint);
+}

@@ -1,0 +1,18 @@
+  <a class="md-skip" href="#main" data-i18n="nav.skip">Skip to content</a>
+  <!-- Fixed, full-width bar in the tonymagnetic layout: transparent over the hero, solid with a blur once the
+       page scrolls (meta.js toggles .is-scrolled), brand left, uppercase nav right, hamburger under 56rem. -->
+  <header class="md-top" id="top">
+    <div class="md-shell md-top-inner">
+      <a class="md-brand" data-nav="home" href="/"><span class="md-brand-name">Landed</span><span class="md-brand-place" data-i18n="brand.place">Aberdeen</span></a>
+      <button class="md-menu-toggle" type="button" aria-expanded="false" aria-controls="md-nav" aria-label="Open menu" data-i18n-attr="aria-label:nav.menu.open"><span></span></button>
+      <nav class="md-nav" id="md-nav" aria-label="Site">
+        <ul class="md-nav-list">
+          <li><a data-md="nav" data-nav="home" href="/" data-i18n="nav.order">Order a kit</a></li>
+          <li><a data-md="nav" data-nav="about" href="/about/" data-i18n="nav.about">About us</a></li>
+          <li><a data-md="nav" data-nav="contact" href="/contact/" data-i18n="nav.contact">Contact</a></li>
+        </ul>
+        <md-switcher controls="mode lang skin"></md-switcher>
+      </nav>
+    </div>
+  </header>
+  <md-langhint></md-langhint>

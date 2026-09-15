@@ -4,7 +4,8 @@
  * - Skips migrations already run; warns when an applied file changed
  * - Ignores idempotent errors (duplicate column, already exists) when re-running
  *
- * CLI:   npm run db:migrate            # pending migrations against TURSO_DATABASE_URL (.dev.vars / .env)
+ * CLI:   npm run db:migrate            # pending migrations against DATABASE_URL (.dev.vars / .env), a SQLite file
+ *        npm run db:migrate:remote     # the production D1 database, through wrangler (see package.json)
  *        npm run db:migrate -- --rerun 002
  * Code:  import { migrate } from './db/migrate.js'; await migrate(db)
  */
@@ -111,7 +112,7 @@ if (isCli) {
   loadEnv('.dev.vars'); loadEnv('.env')
   const args = process.argv.slice(2)
   const rerun = args.includes('--rerun') ? args[args.indexOf('--rerun') + 1] : null
-  const db = createClient({ url: process.env.TURSO_DATABASE_URL || 'file:.data/landed.db', authToken: process.env.TURSO_AUTH_TOKEN || undefined })
+  const db = createClient({ url: process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL || 'file:.data/landed.db', authToken: process.env.TURSO_AUTH_TOKEN || undefined })
   migrate(db, { rerun, log: console.log })
     .then(n => { console.log(n === 0 && !rerun ? 'No pending migrations.' : `Done. ${n} migration(s) applied.`); db.close() })
     .catch(err => { console.error(err); process.exit(1) })

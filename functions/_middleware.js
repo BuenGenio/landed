@@ -6,15 +6,16 @@ import { getDb } from './lib/db.js'
 import { logApiRequest } from './lib/api-logger.js'
 import { isAdmin, json } from './lib/http.js'
 
-// Everything here needs the admin key. Public: POST /api/orders, GET /api/orders/:ref (email-matched),
-// POST /api/orders/:ref/cancel (email-matched), /api/checkout*, /api/referrals, /api/webhooks, /api/health.
+// Everything here needs admin (session cookie or key). Public: POST /api/orders, GET /api/orders/:ref (email-matched),
+// POST /api/orders/:ref/cancel (email-matched), /api/checkout*, /api/referrals, /api/webhooks, /api/health, /api/auth/*.
 function needsAdmin(path, method) {
   if (path === '/api/orders' && method === 'GET') return true
   if (path === '/api/orders' && method === 'DELETE') return true
   if (path.startsWith('/api/orders/') && (method === 'PATCH' || method === 'DELETE')) return true
   if (path.startsWith('/api/orders/') && path.endsWith('/notify')) return true
   if (path.startsWith('/api/orders/') && path.endsWith('/refund')) return true
-  return ['/api/deliveries', '/api/stats', '/api/notification-templates', '/api/notifications', '/api/settings', '/api/logs', '/api/export']
+  if (path.startsWith('/api/orders/') && path.endsWith('/invoice')) return true
+  return ['/api/deliveries', '/api/stats', '/api/notification-templates', '/api/notifications', '/api/settings', '/api/logs', '/api/export', '/api/payments', '/api/invoices', '/api/billing', '/api/users']
     .some(p => path === p || path.startsWith(p + '/'))
 }
 
@@ -32,7 +33,7 @@ async function gateAndLog(context) {
   const path = url.pathname, method = request.method
   if (!path.startsWith('/api/')) return context.next()
   if (method === 'OPTIONS') return context.next()
-  if (needsAdmin(path, method) && !isAdmin(request, env)) return json({ error: 'Unauthorized' }, 401)
+  if (needsAdmin(path, method) && !(await isAdmin(request, env))) return json({ error: 'Unauthorized' }, 401)
 
   const dateStart = new Date().toISOString()
   let requestData = null
