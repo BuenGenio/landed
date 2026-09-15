@@ -43,7 +43,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.0",
     "reka-ui": "^2.10.4",
-    "sharp": "^0.33.0",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vite": "^8.3.0",
