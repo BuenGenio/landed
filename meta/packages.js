@@ -28,6 +28,13 @@
     PaymentGateway: {
       defaults: { currency: "GBP", amount: "20" },
       providers: {
+        // Hosted checkout through the site's own API (POST /api/checkout): the page intercepts the click,
+        // asks the server for a Stripe Checkout Session and redirects. The href is the same link an email carries.
+        checkout: {
+          label: "card",
+          href: a => a.ref ? `?pay=${enc(a.ref)}` : "",
+          note: () => t("pay.note.checkout", null, "Secure card checkout by Stripe; Apple Pay and Google Pay work too. Your reference is attached to the payment."),
+        },
         monobank: {
           label: "monobank",
           href: a => a.account ? `https://send.monobank.ua/jar/${a.account}?a=${enc(a.amount)}&t=${enc(a.ref || "")}` : "",
